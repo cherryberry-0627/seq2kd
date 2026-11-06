@@ -152,12 +152,15 @@ class Stage3CandidateModel(nn.Module):
         cdr_global = None
         if self.use_cdr:
             pooled_cdrs = []
+            present = []
             for name in CDR_NAMES:
                 mask = batch["cdr_masks"][name]
                 pooled_cdrs.append(self._masked_mean(vh_tokens, mask))
-            cdr_pooled = torch.stack(pooled_cdrs, dim=1)  # [B,3,H]
-            cdr_pooled = self.cdr_norm(cdr_pooled)
-            cdr_global = cdr_pooled.mean(dim=1)           # [B,H]
+                present.append(mask.any(dim=1))
+            raw_cdr = torch.stack(pooled_cdrs, dim=1)  # [B,3,H]
+            present = torch.stack(present, dim=1).to(raw_cdr.dtype)  # [B,3]
+            cdr_pooled = self.cdr_norm(raw_cdr) * present.unsqueeze(-1)
+            cdr_global = cdr_pooled.mean(dim=1)        # [B,H]
 
         cross = None
         if self.cross_attn is not None:
