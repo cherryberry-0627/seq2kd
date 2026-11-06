@@ -44,6 +44,14 @@ def main() -> dict:
     parser.add_argument("--lambda-abs", type=float, default=DEFAULT_CONFIG["lambda_abs"])
     parser.add_argument("--temperature", type=float, default=DEFAULT_CONFIG["temperature"])
     parser.add_argument("--rel-warmup-epochs", type=int, default=DEFAULT_CONFIG["rel_warmup_epochs"])
+    parser.add_argument("--hard-negative", choices=("none", "deterministic", "topk"),
+                        default=DEFAULT_CONFIG["hard_negative_mode"])
+    parser.add_argument("--lambda-hard-rank", type=float,
+                        default=DEFAULT_CONFIG["lambda_hard_rank"])
+    parser.add_argument("--hard-margin", type=float, default=DEFAULT_CONFIG["hard_margin"])
+    parser.add_argument("--hard-temperature", type=float,
+                        default=DEFAULT_CONFIG["hard_temperature"])
+    parser.add_argument("--hard-topk", type=int, default=DEFAULT_CONFIG["hard_topk"])
     parser.add_argument("--epochs", type=int, default=DEFAULT_CONFIG["epochs"])
     parser.add_argument("--batch-size", type=int, default=DEFAULT_CONFIG["batch_size"])
     parser.add_argument("--seed", type=int, default=DEFAULT_CONFIG["seed"])
@@ -66,6 +74,11 @@ def main() -> dict:
         lambda_abs=args.lambda_abs,
         temperature=args.temperature,
         rel_warmup_epochs=args.rel_warmup_epochs,
+        hard_negative_mode=args.hard_negative,
+        lambda_hard_rank=args.lambda_hard_rank,
+        hard_margin=args.hard_margin,
+        hard_temperature=args.hard_temperature,
+        hard_topk=args.hard_topk,
         epochs=args.epochs,
         batch_size=args.batch_size,
         seed=args.seed,
@@ -84,7 +97,7 @@ def main() -> dict:
     }
     result = _json_safe(result)
 
-    tag = f"vh{args.lambda_target:g}_seed{args.seed}"
+    tag = f"vh{args.lambda_target:g}_hn{args.hard_negative}_seed{args.seed}"
     out_path = args.out or (root / "results" / f"multihead_{tag}.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",

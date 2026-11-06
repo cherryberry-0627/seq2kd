@@ -54,6 +54,11 @@ DEFAULT_CONFIG = {
     "lambda_rel": 0.3,
     "temperature": 1.0,
     "rel_warmup_epochs": 0,
+    "hard_negative_mode": "none",
+    "lambda_hard_rank": 0.0,
+    "hard_margin": 0.1,
+    "hard_temperature": 1.0,
+    "hard_topk": 1,
 }
 
 
@@ -107,6 +112,55 @@ class MultiHeadCandidateModel(nn.Module):
         }
 
 
+def select_online_hard_negative(rank_score, target_index, margin=0.1):
+    """Select the highest-violation non-target candidate for each sample.
+
+    The returned candidate is a training challenge, not an experimentally
+    confirmed non-binding pair. Scores are detached during selection so the
+    discrete argmax cannot create a gradient path through the action choice.
+    """
+    if rank_score.ndim != 2:
+        raise ValueError(f"rank_score must be [B, K], got {tuple(rank_score.shape)}")
+    if target_index.ndim != 1 or target_index.shape[0] != rank_score.shape[0]:
+        raise ValueError("target_index must be [B] and match rank_score")
+    rows = torch.arange(target_index.shape[0], device=rank_score.device)
+    detached = rank_score.detach()
+    positive = detached[rows, target_index]
+    violation = detached - positive.unsqueeze(1) + float(margin)
+    valid = torch.ones_like(violation, dtype=torch.bool)
+    valid[rows, target_index] = False
+    violation = violation.masked_fill(~valid, float("-inf"))
+    hard_index = violation.argmax(dim=1)
+    return hard_index, violation
+
+
+def online_pairwise_rank_loss(rank_score, target_index, hard_index,
+                              temperature=1.0):
+    """Pairwise softplus loss for selected online hard negatives."""
+    rows = torch.arange(target_index.shape[0], device=rank_score.device)
+    positive = rank_score[rows, target_index]
+    negative = rank_score[rows, hard_index]
+    return F.softplus(-(positive - negative) / float(temperature)).mean()
+
+
+def online_topk_rank_loss(rank_score, target_index, topk=1, margin=0.1,
+                          temperature=1.0):
+    """Weighted pairwise loss over the top-k violating candidates."""
+    if topk < 1:
+        raise ValueError("topk must be >= 1")
+    hard_index, violation = select_online_hard_negative(
+        rank_score, target_index, margin=margin)
+    rows = torch.arange(target_index.shape[0], device=rank_score.device)
+    num_candidates = rank_score.shape[1]
+    k = min(int(topk), max(num_candidates - 1, 1))
+    values, indices = torch.topk(violation, k=k, dim=1)
+    weights = torch.softmax(values / float(temperature), dim=1)
+    positive = rank_score[rows, target_index].unsqueeze(1)
+    negative = rank_score.gather(1, indices)
+    pair_loss = F.softplus(-(positive - negative) / float(temperature))
+    return (weights * pair_loss).sum(dim=1).mean(), hard_index, violation
+
+
 def compute_loss(output, batch, config, epoch=0):
     index = batch["target_index"]
     rows = torch.arange(index.shape[0], device=index.device)
@@ -121,18 +175,39 @@ def compute_loss(output, batch, config, epoch=0):
     if warmup > 0:
         lambda_rel *= min((epoch + 1) / warmup, 1.0)
     rank_loss = F.cross_entropy(output["rank_score"] / float(config["temperature"]), index)
+    hard_rank_loss = rank_loss.new_zeros(())
+    hard_index = None
+    hard_violation = None
+    hard_mode = str(config.get("hard_negative_mode", "none"))
+    if hard_mode == "deterministic":
+        hard_index, hard_violation = select_online_hard_negative(
+            output["rank_score"], index, margin=config["hard_margin"])
+        hard_rank_loss = online_pairwise_rank_loss(
+            output["rank_score"], index, hard_index,
+            temperature=config["hard_temperature"])
+    elif hard_mode == "topk":
+        hard_rank_loss, hard_index, hard_violation = online_topk_rank_loss(
+            output["rank_score"], index, topk=config["hard_topk"],
+            margin=config["hard_margin"], temperature=config["hard_temperature"])
+    elif hard_mode != "none":
+        raise ValueError(
+            "hard_negative_mode must be one of none, deterministic, topk")
 
     total = (float(config["lambda_target"]) * target_loss
              + float(config["lambda_class"]) * class_loss
              + float(config["lambda_abs"]) * abs_loss
-             + lambda_rel * rank_loss)
+             + lambda_rel * rank_loss
+             + float(config.get("lambda_hard_rank", 0.0)) * hard_rank_loss)
     return {
         "loss": total,
         "target_loss": target_loss,
         "class_loss": class_loss,
         "abs_loss": abs_loss,
         "rank_loss": rank_loss,
+        "hard_rank_loss": hard_rank_loss,
         "lambda_rel_now": lambda_rel,
+        "hard_index": hard_index,
+        "hard_violation": hard_violation,
     }
 
 
@@ -183,7 +258,8 @@ def train_multihead_model(train_dataset, library, config=None):
             model.encoder_vh.eval()
             model.encoder_antigen.eval()
         totals = {key: 0.0 for key in
-                  ("loss", "target_loss", "class_loss", "abs_loss", "rank_loss")}
+                  ("loss", "target_loss", "class_loss", "abs_loss", "rank_loss",
+                   "hard_rank_loss")}
         total_n = 0
         for indices in batch_slices(len(train_dataset), config["batch_size"], True,
                                     config["seed"] + epoch):
@@ -233,6 +309,17 @@ def predict_multihead(bundle, dataset, batch_size=None):
         "rank_score": np.concatenate(rank_score),
         "sample_ids": sample_ids,
     }
+
+
+def _numpy_hard_negative(rank_score, target_index, margin):
+    """Return hard candidate indices and violation values for reporting."""
+    score = np.asarray(rank_score, dtype=float).copy()
+    rows = np.arange(score.shape[0])
+    positive = score[rows, target_index]
+    violation = score - positive[:, None] + float(margin)
+    violation[rows, target_index] = -np.inf
+    hard_index = np.argmax(violation, axis=1)
+    return hard_index, violation[rows, hard_index]
 
 
 def _per_class_f1(y_true, y_pred, classes):
@@ -301,6 +388,8 @@ def export_multihead_interpretability(bundle, dataset, path, temperature=1.0):
     rank_score = prediction["rank_score"]
     rank_prob = np.exp((rank_score - rank_score.max(axis=1, keepdims=True)) / temperature)
     rank_prob = rank_prob / rank_prob.sum(axis=1, keepdims=True)
+    hard_index, hard_violation = _numpy_hard_negative(
+        rank_score, target_index, bundle.config.get("hard_margin", 0.1))
     target_pred_head = ID_TO_TARGET[prediction["target_logits"].argmax(axis=1)]
     target_pred_rank = ID_TO_TARGET[rank_score.argmax(axis=1)]
     affinity_true_index = np.array([AFFINITY_TO_ID[s["affinity_class"]] for s in dataset])
@@ -310,6 +399,7 @@ def export_multihead_interpretability(bundle, dataset, path, temperature=1.0):
     fields = ["sample_id", "true_target_id", "target_head_pred", "ranking_pred",
               "true_target_rank", "gap_top1_top2", "confidence_bucket", "rank",
               "candidate_antigen_id", "rank_score", "rank_prob",
+              "online_hard_negative_id", "online_hard_violation",
               "z_head_log_kd", "z_head_supervised", "affinity_head_class",
               "measured_affinity_class"]
     with path.open("w", encoding="utf-8", newline="") as handle:
@@ -336,6 +426,8 @@ def export_multihead_interpretability(bundle, dataset, path, temperature=1.0):
                     "candidate_antigen_id": candidate_id,
                     "rank_score": f"{float(rank_score[i, j]):.6f}",
                     "rank_prob": f"{float(rank_prob[i, j]):.6f}",
+                    "online_hard_negative_id": bundle.library["ids"][int(hard_index[i])],
+                    "online_hard_violation": f"{float(hard_violation[i]):.6f}",
                     "z_head_log_kd": f"{float(prediction['log_kd_pred'][i, j]):.6f}",
                     "z_head_supervised": bool(j == target_index[i]),
                     "affinity_head_class": affinity_pred if j == target_index[i] else "",
