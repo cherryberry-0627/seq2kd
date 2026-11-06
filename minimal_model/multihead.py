@@ -59,14 +59,19 @@ DEFAULT_CONFIG = {
     "hard_margin": 0.1,
     "hard_temperature": 1.0,
     "hard_topk": 1,
+    "rank_fusion_mode": "shared",
 }
 
 
 class MultiHeadCandidateModel(nn.Module):
     def __init__(self, tokenizer: AminoAcidTokenizer, num_candidates: int = 5,
                  hidden_size: int = 64, num_heads: int = 4, ff_size: int = 128,
-                 num_layers: int = 2, fusion_size: int = 96, dropout: float = 0.1):
+                 num_layers: int = 2, fusion_size: int = 96, dropout: float = 0.1,
+                 rank_fusion_mode: str = "shared"):
         super().__init__()
+        if rank_fusion_mode not in ("shared", "independent", "stopgrad"):
+            raise ValueError(f"unknown rank_fusion_mode: {rank_fusion_mode}")
+        self.rank_fusion_mode = rank_fusion_mode
         self.hidden_size = hidden_size
         self.encoder_vh = TransformerEncoder(
             tokenizer.vocab_size, tokenizer.max_vh_length,
@@ -76,6 +81,9 @@ class MultiHeadCandidateModel(nn.Module):
             hidden_size, num_heads, ff_size, num_layers, dropout)
         self.fusion = nn.Sequential(
             nn.Linear(hidden_size * 4, fusion_size), nn.GELU(), nn.Dropout(dropout))
+        self.rank_fusion = (nn.Sequential(
+            nn.Linear(hidden_size * 4, fusion_size), nn.GELU(), nn.Dropout(dropout))
+            if rank_fusion_mode == "independent" else None)
         self.target_head = nn.Linear(hidden_size, num_candidates)
         self.affinity_head = nn.Linear(fusion_size, 3)
         self.z_head = nn.Linear(fusion_size, 1)
@@ -102,11 +110,17 @@ class MultiHeadCandidateModel(nn.Module):
             vh_expanded, antigen, (vh_expanded - antigen).abs(), vh_expanded * antigen
         ], dim=-1)
         pair = self.fusion(fused)
+        if self.rank_fusion is not None:
+            rank_pair = self.rank_fusion(fused)
+        elif self.rank_fusion_mode == "stopgrad":
+            rank_pair = pair.detach()
+        else:
+            rank_pair = pair
         return {
             "target_logits": self.target_head(vh),
             "affinity_logits": self.affinity_head(pair),
             "log_kd_pred": self.z_head(pair).squeeze(-1),
-            "rank_score": self.rank_head(pair).squeeze(-1),
+            "rank_score": self.rank_head(rank_pair).squeeze(-1),
             "vh_embedding": vh,
             "candidate_antigen_embedding": antigen,
         }
@@ -240,7 +254,8 @@ def train_multihead_model(train_dataset, library, config=None):
     model = MultiHeadCandidateModel(
         tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
         ff_size=config["ff_size"], num_layers=config["num_layers"],
-        fusion_size=config["fusion_size"], dropout=config["dropout"]).to(device)
+        fusion_size=config["fusion_size"], dropout=config["dropout"],
+        rank_fusion_mode=config.get("rank_fusion_mode", "shared")).to(device)
 
     if config["freeze_encoder"]:
         for parameter in (list(model.encoder_vh.parameters())

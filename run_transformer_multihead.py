@@ -52,6 +52,8 @@ def main() -> dict:
     parser.add_argument("--hard-temperature", type=float,
                         default=DEFAULT_CONFIG["hard_temperature"])
     parser.add_argument("--hard-topk", type=int, default=DEFAULT_CONFIG["hard_topk"])
+    parser.add_argument("--rank-fusion", choices=("shared", "independent", "stopgrad"),
+                        default=DEFAULT_CONFIG["rank_fusion_mode"])
     parser.add_argument("--epochs", type=int, default=DEFAULT_CONFIG["epochs"])
     parser.add_argument("--batch-size", type=int, default=DEFAULT_CONFIG["batch_size"])
     parser.add_argument("--seed", type=int, default=DEFAULT_CONFIG["seed"])
@@ -79,6 +81,7 @@ def main() -> dict:
         hard_margin=args.hard_margin,
         hard_temperature=args.hard_temperature,
         hard_topk=args.hard_topk,
+        rank_fusion_mode=args.rank_fusion,
         epochs=args.epochs,
         batch_size=args.batch_size,
         seed=args.seed,
@@ -97,7 +100,8 @@ def main() -> dict:
     }
     result = _json_safe(result)
 
-    tag = f"vh{args.lambda_target:g}_hn{args.hard_negative}_seed{args.seed}"
+    tag = (f"vh{args.lambda_target:g}_hn{args.hard_negative}"
+           f"_rf{args.rank_fusion}_seed{args.seed}")
     out_path = args.out or (root / "results" / f"multihead_{tag}.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
