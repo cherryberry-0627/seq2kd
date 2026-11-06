@@ -1,0 +1,21 @@
+{
+ "val_vs_train": {
+  "n": 68,
+  "median": 0.9733,
+  "frac_ge95": 0.5882,
+  "frac_ge90": 0.75
+ },
+ "test_vs_train": {
+  "n": 71,
+  "median": 0.9712,
+  "frac_ge95": 0.662,
+  "frac_ge90": 0.8451
+ },
+ "test_vs_trainval": {
+  "n": 71,
+  "median": 0.975,
+  "frac_ge95": 0.7042,
+  "frac_ge90": 0.8451
+ },
+ "note": "unique-VH level; 3-mer cosine top30 + difflib.ratio approx identity"
+}
