@@ -99,3 +99,33 @@ def build_epitope_token_index(library: dict, epitope_table: dict,
         "mask": torch.tensor(mask, dtype=torch.bool),
         "positions": positions_out,
     }
+
+
+def build_epitope_chunk_bias(library: dict, epitope_table: dict,
+                             tokenizer) -> torch.Tensor:
+    """每个 antigen chunk 的表位残基比例 [5, C]，作为 chunk attention 的软先验。"""
+    ids = list(library["ids"])
+    chunk_length = int(tokenizer.antigen_chunk_length)
+    overlap = int(tokenizer.antigen_overlap)
+    max_chunks = 0
+    starts_by_target = []
+    for i, target_id in enumerate(ids):
+        sequence = library["sequences"][i]
+        entry = epitope_table.get(target_id)
+        if entry is None:
+            raise ValueError(f"no epitope entry for {target_id}")
+        starts = _chunk_starts(len(sequence), chunk_length, overlap)
+        starts_by_target.append(starts)
+        max_chunks = max(max_chunks, len(starts))
+
+    bias = np.zeros((len(ids), max_chunks), dtype=np.float32)
+    for i, target_id in enumerate(ids):
+        sequence = library["sequences"][i]
+        entry = epitope_table[target_id]
+        for chunk_index, start in enumerate(starts_by_target[i]):
+            chunk_size = min(chunk_length - 2, len(sequence) - start)
+            if chunk_size <= 0:
+                continue
+            epitope_count = int(entry["mask"][start:start + chunk_size].sum())
+            bias[i, chunk_index] = epitope_count / chunk_size
+    return torch.tensor(bias, dtype=torch.float32)

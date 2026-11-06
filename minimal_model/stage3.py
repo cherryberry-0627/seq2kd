@@ -21,7 +21,7 @@ import torch.nn.functional as F
 from torch import nn
 
 from .cdr import CDR_NAMES, build_cdr_masks
-from .epitope import build_epitope_token_index
+from .epitope import build_epitope_chunk_bias, build_epitope_token_index
 from .metrics import logkd_to_class, macro_f1, mae
 from .tokenizer import AminoAcidTokenizer, build_tokenizer
 from .training import (AFFINITY_TO_ID, ID_TO_AFFINITY, ID_TO_TARGET,
@@ -58,6 +58,9 @@ DEFAULT_CONFIG = {
     "use_chunk_attention": False,
     "use_cross_attention": False,
     "use_epitope_cross_attention": False,
+    "epitope_variant": "none",
+    "epitope_scope": "task2_true",
+    "cdr_query_max_tokens": 64,
     "cdr_query": "all",
     "epitope_max_tokens": 128,
 }
@@ -245,7 +248,7 @@ class Stage3CandidateModel(nn.Module):
 
 def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
                    target_to_index, cdr_table, epitope_index=None,
-                   epitope_mask=None, device=None):
+                   epitope_mask=None, epitope_chunk_bias=None, device=None):
     vh = tokenizer.tokenize_vh_with_offsets([s["vh_sequence_aa"] for s in samples])
     bsz = len(samples)
     antigen_ids = antigen_tokens["input_ids"].unsqueeze(0).expand(bsz, -1, -1, -1)
@@ -273,6 +276,8 @@ def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
         batch["epitope_index"] = epitope_index
     if epitope_mask is not None:
         batch["epitope_mask"] = epitope_mask
+    if epitope_chunk_bias is not None:
+        batch["epitope_chunk_bias"] = epitope_chunk_bias
     if device is not None:
         batch = {key: value.to(device) if isinstance(value, torch.Tensor) else value
                  for key, value in batch.items()}
@@ -312,6 +317,7 @@ class Stage3Bundle:
     history: list
     epitope_index: torch.Tensor | None = None
     epitope_mask: torch.Tensor | None = None
+    epitope_chunk_bias: torch.Tensor | None = None
 
 
 def train_stage3_model(train_dataset, library, cdr_table, config=None,
@@ -329,23 +335,46 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None,
         key: value.to(device)
         for key, value in tokenizer.tokenize_antigen_chunks(library["sequences"]).items()
     }
+    variant = config.get("epitope_variant", "none")
+    needs_epitope_tokens = (variant in ("pooled", "token_query")
+                            or config["use_epitope_cross_attention"])
     epitope_index = None
     epitope_mask = None
-    if config["use_epitope_cross_attention"]:
+    epitope_chunk_bias = None
+    if needs_epitope_tokens:
         if epitope_table is None:
-            raise ValueError("epitope_table is required for epitope cross-attention")
+            raise ValueError("epitope_table is required for epitope features")
         epitope_data = build_epitope_token_index(
             library, epitope_table, tokenizer, epitope_max_tokens)
         epitope_index = epitope_data["index"].to(device)
         epitope_mask = epitope_data["mask"].to(device)
-    model = Stage3CandidateModel(
-        tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
-        ff_size=config["ff_size"], num_layers=config["num_layers"],
-        fusion_size=config["fusion_size"], dropout=config["dropout"],
-        use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
-        use_cross_attention=config["use_cross_attention"],
-        use_epitope_cross_attention=config["use_epitope_cross_attention"],
-        cdr_query=config["cdr_query"]).to(device)
+    if variant == "chunk_bias":
+        if epitope_table is None:
+            raise ValueError("epitope_table is required for chunk bias")
+        epitope_chunk_bias = build_epitope_chunk_bias(
+            library, epitope_table, tokenizer).to(device)
+
+    if variant != "none":
+        from .stage3_variants import Stage3VariantModel
+        model = Stage3VariantModel(
+            tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
+            ff_size=config["ff_size"], num_layers=config["num_layers"],
+            fusion_size=config["fusion_size"], dropout=config["dropout"],
+            use_cdr=config["use_cdr"],
+            use_chunk_attention=config["use_chunk_attention"],
+            cdr_query=config["cdr_query"],
+            epitope_variant=variant,
+            epitope_scope=config["epitope_scope"],
+            cdr_query_max_tokens=config["cdr_query_max_tokens"]).to(device)
+    else:
+        model = Stage3CandidateModel(
+            tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
+            ff_size=config["ff_size"], num_layers=config["num_layers"],
+            fusion_size=config["fusion_size"], dropout=config["dropout"],
+            use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
+            use_cross_attention=config["use_cross_attention"],
+            use_epitope_cross_attention=config["use_epitope_cross_attention"],
+            cdr_query=config["cdr_query"]).to(device)
     if config["freeze_encoder"]:
         for parameter in (list(model.encoder_vh.parameters())
                           + list(model.encoder_antigen.parameters())):
@@ -366,7 +395,8 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None,
             samples = [train_dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, tokenizer, antigen_tokens,
                                    library["target_to_index"], cdr_table,
-                                   epitope_index, epitope_mask, device)
+                                   epitope_index, epitope_mask,
+                                   epitope_chunk_bias, device)
             optimizer.zero_grad(set_to_none=True)
             output = model.forward_candidates(batch)
             losses = compute_loss(output, batch, config, epoch)
@@ -385,7 +415,8 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None,
     return Stage3Bundle(model=model, tokenizer=tokenizer, antigen_tokens=antigen_tokens,
                         library=library, cdr_table=cdr_table, config=config,
                         device=device, history=history,
-                        epitope_index=epitope_index, epitope_mask=epitope_mask)
+                        epitope_index=epitope_index, epitope_mask=epitope_mask,
+                        epitope_chunk_bias=epitope_chunk_bias)
 
 
 def predict_stage3(bundle, dataset, batch_size=None):
@@ -399,7 +430,7 @@ def predict_stage3(bundle, dataset, batch_size=None):
             batch = collate_stage3(samples, bundle.tokenizer, bundle.antigen_tokens,
                                    bundle.library["target_to_index"], bundle.cdr_table,
                                    bundle.epitope_index, bundle.epitope_mask,
-                                   bundle.device)
+                                   bundle.epitope_chunk_bias, bundle.device)
             output = model.forward_candidates(batch)
             target_logits.append(output["target_logits"].cpu().numpy())
             affinity_logits.append(output["affinity_logits"].cpu().numpy())
@@ -481,7 +512,7 @@ def export_stage3_interpretability(bundle, dataset, path, temperature=1.0):
             batch = collate_stage3(samples, bundle.tokenizer, bundle.antigen_tokens,
                                    bundle.library["target_to_index"], bundle.cdr_table,
                                    bundle.epitope_index, bundle.epitope_mask,
-                                   bundle.device)
+                                   bundle.epitope_chunk_bias, bundle.device)
             output = model.forward_candidates(batch)
             rank_score = output["rank_score"].cpu().numpy()
             log_kd = output["log_kd_pred"].cpu().numpy()

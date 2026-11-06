@@ -40,6 +40,12 @@ def main() -> dict:
     parser.add_argument("--use-chunk-attention", action="store_true")
     parser.add_argument("--use-cross-attention", action="store_true")
     parser.add_argument("--use-epitope-cross-attention", action="store_true")
+    parser.add_argument("--epitope-variant",
+                        choices=("none", "chunk_bias", "pooled", "token_query"),
+                        default="none")
+    parser.add_argument("--epitope-scope", choices=("task2_true", "all"),
+                        default="task2_true")
+    parser.add_argument("--cdr-query-max-tokens", type=int, default=64)
     parser.add_argument("--epitope-dir", type=Path, default=Path("features/epitope"))
     parser.add_argument("--epitope-max-tokens", type=int, default=128)
     parser.add_argument("--cdr-query", choices=("h3", "all"), default="all")
@@ -66,7 +72,7 @@ def main() -> dict:
     cdr_path = args.cdr_annotations if args.cdr_annotations.is_absolute() else root / args.cdr_annotations
     cdr_table = load_cdr_table(cdr_path)
     epitope_table = None
-    if args.use_epitope_cross_attention:
+    if args.use_epitope_cross_attention or args.epitope_variant != "none":
         epitope_dir = (args.epitope_dir if args.epitope_dir.is_absolute()
                        else root / args.epitope_dir)
         epitope_table = load_epitope_table(epitope_dir)
@@ -78,6 +84,9 @@ def main() -> dict:
         use_chunk_attention=args.use_chunk_attention,
         use_cross_attention=args.use_cross_attention,
         use_epitope_cross_attention=args.use_epitope_cross_attention,
+        epitope_variant=args.epitope_variant,
+        epitope_scope=args.epitope_scope,
+        cdr_query_max_tokens=args.cdr_query_max_tokens,
         cdr_query=args.cdr_query,
         epitope_max_tokens=args.epitope_max_tokens,
         lambda_target=args.lambda_target,
@@ -98,6 +107,8 @@ def main() -> dict:
 
     if args.tag:
         tag = args.tag
+    elif args.epitope_variant != "none":
+        tag = f"m6_{args.epitope_variant}_{args.epitope_scope}"
     elif args.use_epitope_cross_attention:
         tag = f"m5_epitope_{args.cdr_query}"
     elif args.use_cross_attention:
