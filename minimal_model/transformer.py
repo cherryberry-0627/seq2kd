@@ -18,13 +18,20 @@ class TransformerEncoder(nn.Module):
         self.encoder = nn.TransformerEncoder(layer, num_layers=num_layers)
         self.norm = nn.LayerNorm(hidden_size)
 
-    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
+    def forward_tokens(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
+        """返回 token 级表示 [B, L, H]，不池化。"""
         bsz, length = input_ids.shape
         positions = torch.arange(length, device=input_ids.device).unsqueeze(0).expand(bsz, length)
         x = self.embedding(input_ids) + self.position(positions)
-        x = self.encoder(x, src_key_padding_mask=~attention_mask.bool())
-        mask = attention_mask.unsqueeze(-1).to(x.dtype)
-        return self.norm((x * mask).sum(dim=1) / mask.sum(dim=1).clamp_min(1.0))
+        return self.encoder(x, src_key_padding_mask=~attention_mask.bool())
+
+    def pool_tokens(self, tokens: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
+        """masked mean pooling + LayerNorm；tokens [B,L,H]，mask [B,L]。"""
+        mask = attention_mask.unsqueeze(-1).to(tokens.dtype)
+        return self.norm((tokens * mask).sum(dim=1) / mask.sum(dim=1).clamp_min(1.0))
+
+    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
+        return self.pool_tokens(self.forward_tokens(input_ids, attention_mask), attention_mask)
 
 
 class TransformerModel(nn.Module):

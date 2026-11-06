@@ -17,21 +17,38 @@ class AminoAcidTokenizer:
         self.antigen_overlap = antigen_overlap
         self.vocab_size = len(AA_TO_ID) + 4
 
-    def encode(self, sequence: str, max_length: int) -> tuple[list[int], list[int]]:
+    def encode_with_offsets(self, sequence: str, max_length: int) -> tuple[list[int], list[int], list[int]]:
+        """编码序列，并返回每个 token 对应的原始 residue 下标（-1 为特殊/PAD）。"""
         seq = sequence.strip().upper()
         usable = max(0, max_length - 2)
         if len(seq) > usable:
             left = usable // 2
-            seq = seq[:left] + seq[-(usable - left):]
-        ids = [BOS_ID] + [AA_TO_ID.get(aa, UNK_ID) for aa in seq] + [EOS_ID]
-        ids += [PAD_ID] * (max_length - len(ids))
-        mask = [1] * min(len(seq) + 2, max_length) + [0] * max(0, max_length - len(seq) - 2)
-        return ids[:max_length], mask[:max_length]
+            kept = list(range(left)) + list(range(len(seq) - (usable - left), len(seq)))
+        else:
+            kept = list(range(len(seq)))
+        ids = [BOS_ID] + [AA_TO_ID.get(seq[i], UNK_ID) for i in kept] + [EOS_ID]
+        padding = max(0, max_length - len(ids))
+        ids += [PAD_ID] * padding
+        mask = [1] * min(len(kept) + 2, max_length) + [0] * max(0, max_length - len(kept) - 2)
+        offsets = [-1] + kept + [-1] + [-1] * padding
+        return ids[:max_length], mask[:max_length], offsets[:max_length]
+
+    def encode(self, sequence: str, max_length: int) -> tuple[list[int], list[int]]:
+        ids, mask, _offsets = self.encode_with_offsets(sequence, max_length)
+        return ids, mask
 
     def tokenize_vh(self, sequences: list[str]) -> dict[str, torch.Tensor]:
         pairs = [self.encode(s, self.max_vh_length) for s in sequences]
         return {"input_ids": torch.tensor([p[0] for p in pairs], dtype=torch.long),
                 "attention_mask": torch.tensor([p[1] for p in pairs], dtype=torch.bool)}
+
+    def tokenize_vh_with_offsets(self, sequences: list[str]) -> dict[str, torch.Tensor]:
+        triples = [self.encode_with_offsets(s, self.max_vh_length) for s in sequences]
+        return {
+            "input_ids": torch.tensor([p[0] for p in triples], dtype=torch.long),
+            "attention_mask": torch.tensor([p[1] for p in triples], dtype=torch.bool),
+            "residue_index": torch.tensor([p[2] for p in triples], dtype=torch.long),
+        }
 
     def tokenize_antigen_chunks(self, sequences: list[str]) -> dict[str, torch.Tensor]:
         effective = self.antigen_chunk_length - 2
