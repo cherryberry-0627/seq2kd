@@ -80,13 +80,14 @@ class MultiHeadCandidateModel(nn.Module):
         vh = self.encoder_vh(batch["vh_input_ids"], batch["vh_attention_mask"])
         ids = batch["antigen_input_ids"]
         masks = batch["antigen_attention_mask"]
-        bsz, chunks, length = ids.shape
-        encoded = self.encoder_antigen(ids.reshape(bsz * chunks, length),
-                                       masks.reshape(bsz * chunks, length))
+        bsz, candidates, chunks, length = ids.shape
+        encoded = self.encoder_antigen(
+            ids.reshape(bsz * candidates * chunks, length),
+            masks.reshape(bsz * candidates * chunks, length))
         encoded = torch.nan_to_num(
-            encoded.reshape(bsz, chunks, self.hidden_size), nan=0.0)
+            encoded.reshape(bsz, candidates, chunks, self.hidden_size), nan=0.0)
         chunk_mask = batch["antigen_chunk_mask"].unsqueeze(-1).to(encoded.dtype)
-        antigen = (encoded * chunk_mask).sum(dim=1) / chunk_mask.sum(dim=1).clamp_min(1.0)
+        antigen = (encoded * chunk_mask).sum(dim=2) / chunk_mask.sum(dim=2).clamp_min(1.0)
         return vh, antigen
 
     def forward_candidates(self, batch):
