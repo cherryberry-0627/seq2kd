@@ -250,6 +250,7 @@ def main() -> dict:
     parser.add_argument("--split-seed", type=int, default=2026)
     parser.add_argument("--class-weight-mode", choices=("none", "capped"), default="none")
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--save-checkpoint", type=Path, default=None)
     args = parser.parse_args()
 
     dataset = read_dataset(args.csv)
@@ -265,6 +266,18 @@ def main() -> dict:
         parts["train"], args.class_weight_mode)
 
     bundle = train_task2(parts["train"], config, class_weight_list)
+    if args.save_checkpoint is not None:
+        args.save_checkpoint.parent.mkdir(parents=True, exist_ok=True)
+        torch.save({
+            "model": {k: v.detach().cpu() for k, v in bundle["model"].state_dict().items()},
+            "config": bundle["config"],
+            "tokenizer": {
+                "max_vh_length": config["max_vh_length"],
+                "antigen_chunk_length": config["antigen_chunk_length"],
+                "antigen_overlap": config["antigen_overlap"],
+            },
+        }, args.save_checkpoint)
+        print(f"checkpoint -> {args.save_checkpoint}")
     result = {
         "config": bundle["config"],
         "csv": str(args.csv),
