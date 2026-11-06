@@ -203,7 +203,8 @@ class Stage3CandidateModel(nn.Module):
             flat_tokens = antigen_token_emb.reshape(
                 bsz, candidates, chunks * token_length, self.hidden_size)
             index = batch["epitope_index"].to(flat_tokens.device)
-            index = index.unsqueeze(0).unsqueeze(-1).expand(bsz, -1, -1, -1)
+            index = index.unsqueeze(0).unsqueeze(-1).expand(
+                bsz, -1, -1, self.hidden_size)
             gathered = torch.gather(flat_tokens, 2, index)  # [B,5,K,H]
             epitope_mask = batch["epitope_mask"].to(flat_tokens.device)
             key_padding = ~epitope_mask.unsqueeze(0).expand(bsz, -1, -1)
