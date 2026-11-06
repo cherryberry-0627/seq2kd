@@ -1,0 +1,3 @@
+这些数据来源于AF3预测
+T03是trimer和monomer两种。
+seed均为1
