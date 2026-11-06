@@ -149,9 +149,9 @@ def main() -> dict:
                             temperature=config["temperature"],
                             margin_abs=config["margin_abs"])
 
-    summary_keys = ("target_macro_f1", "target_accuracy", "ranking_mrr",
-                    "ranking_mean_rank", "positive_log_kd_mae", "violation_rate",
-                    "absolute_pairs_auc", "absolute_pairs_auprc",
+    summary_keys = ("target_macro_f1", "target_accuracy", "positive_affinity_macro_f1",
+                    "ranking_mrr", "ranking_mean_rank", "positive_log_kd_mae",
+                    "violation_rate", "absolute_pairs_auc", "absolute_pairs_auprc",
                     "reliable_top1", "absolute_mask_coverage",
                     "frac_pos_above_floor")
     print(json.dumps({key: result[key] for key in summary_keys}, ensure_ascii=False, indent=2))

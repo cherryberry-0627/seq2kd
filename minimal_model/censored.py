@@ -270,7 +270,8 @@ def predict_censored(bundle, dataset, batch_size=None):
     model = bundle.model
     model.eval()
     batch_size = batch_size or bundle.config["batch_size"]
-    candidate_log_kd, target_ranking, target_vh, sample_ids = [], [], [], []
+    candidate_log_kd, target_ranking, target_vh, positive_affinity = [], [], [], []
+    sample_ids = []
 
     with torch.no_grad():
         for indices in batch_slices(len(dataset), batch_size, False, 0):
@@ -282,15 +283,20 @@ def predict_censored(bundle, dataset, batch_size=None):
                 batch["antigen_input_ids"], batch["antigen_attention_mask"],
                 batch["antigen_chunk_mask"])
             log_kd = output["candidate_log_kd"].cpu().numpy()
+            rows = torch.arange(len(samples), device=bundle.device)
             candidate_log_kd.append(log_kd)
             target_ranking.append(log_kd.argmin(axis=1))
             target_vh.append(output["target_logits_vh"].argmax(dim=1).cpu().numpy())
+            positive_affinity.append(
+                output["candidate_affinity_logits"][rows, batch["target_index"]]
+                .argmax(dim=-1).cpu().numpy())
             sample_ids.extend(s["sample_id"] for s in samples)
 
     return {
         "candidate_log_kd": np.concatenate(candidate_log_kd),
         "target_index_ranking": np.concatenate(target_ranking),
         "target_index_vh_only": np.concatenate(target_vh),
+        "positive_affinity_index": np.concatenate(positive_affinity),
         "sample_ids": sample_ids,
     }
 
@@ -338,9 +344,12 @@ def evaluate_censored(bundle, dataset, pair_table, config=None):
 
     target_pred = ID_TO_TARGET[prediction["target_index_ranking"]]
     target_pred_vh = ID_TO_TARGET[prediction["target_index_vh_only"]]
+    affinity_pred = ID_TO_AFFINITY[prediction["positive_affinity_index"]]
     positive_log_kd = log_kd[np.arange(len(dataset)), target_index]
 
     target_f1 = macro_f1(target_true, target_pred, list(bundle.library["ids"]))
+    affinity_f1 = macro_f1(affinity_true, affinity_pred, list(ID_TO_AFFINITY))
+    affinity_acc = float(np.mean(affinity_pred == affinity_true))
     target_acc = float(np.mean(target_pred == target_true))
     target_f1_vh = macro_f1(target_true, target_pred_vh, list(bundle.library["ids"]))
     ranking_mrr = float(np.mean(1.0 / (
@@ -387,6 +396,16 @@ def evaluate_censored(bundle, dataset, pair_table, config=None):
         per_class_f1[cls] = float(2 * precision * recall / (precision + recall)
                                   if precision + recall else 0.0)
 
+    per_class_affinity_f1 = {}
+    for cls in ID_TO_AFFINITY:
+        tp = np.sum((affinity_true == cls) & (affinity_pred == cls))
+        fp = np.sum((affinity_true != cls) & (affinity_pred == cls))
+        fn = np.sum((affinity_true == cls) & (affinity_pred != cls))
+        precision = tp / (tp + fp) if tp + fp else 0.0
+        recall = tp / (tp + fn) if tp + fn else 0.0
+        per_class_affinity_f1[str(cls)] = float(
+            2 * precision * recall / (precision + recall) if precision + recall else 0.0)
+
     mae_by_affinity = {}
     for cls in ("strong", "medium", "weak"):
         mask = affinity_true == cls
@@ -405,6 +424,8 @@ def evaluate_censored(bundle, dataset, pair_table, config=None):
         "target_macro_f1": target_f1,
         "target_accuracy": target_acc,
         "target_macro_f1_vh_only": target_f1_vh,
+        "positive_affinity_macro_f1": affinity_f1,
+        "affinity_accuracy": affinity_acc,
         "ranking_mrr": ranking_mrr,
         "ranking_mean_rank": rank_mean,
         "positive_log_kd_mae": positive_mae,
@@ -420,6 +441,7 @@ def evaluate_censored(bundle, dataset, pair_table, config=None):
         "n_negative_pairs": neg_count,
         "n_unknown_pairs": int(np.sum(status == STATUS_TO_ID[UNKNOWN])),
         "per_class_f1": per_class_f1,
+        "per_class_affinity_f1": per_class_affinity_f1,
         "mae_by_affinity": mae_by_affinity,
         "mae_by_z": mae_by_z,
     }
