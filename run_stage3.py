@@ -11,7 +11,6 @@ import numpy as np
 
 from minimal_model.candidates import build_antigen_library
 from minimal_model.cdr import load_cdr_table
-from minimal_model.epitope import load_epitope_table
 from minimal_model.io import read_dataset
 from minimal_model.pairs import assert_disjoint_vh
 from minimal_model.stage3 import (DEFAULT_CONFIG, evaluate_stage3,
@@ -39,15 +38,6 @@ def main() -> dict:
     parser.add_argument("--use-cdr", action="store_true")
     parser.add_argument("--use-chunk-attention", action="store_true")
     parser.add_argument("--use-cross-attention", action="store_true")
-    parser.add_argument("--use-epitope-cross-attention", action="store_true")
-    parser.add_argument("--epitope-variant",
-                        choices=("none", "chunk_bias", "pooled", "token_query"),
-                        default="none")
-    parser.add_argument("--epitope-scope", choices=("task2_true", "all"),
-                        default="task2_true")
-    parser.add_argument("--cdr-query-max-tokens", type=int, default=64)
-    parser.add_argument("--epitope-dir", type=Path, default=Path("features/epitope"))
-    parser.add_argument("--epitope-max-tokens", type=int, default=128)
     parser.add_argument("--cdr-query", choices=("h3", "all"), default="all")
     parser.add_argument("--lambda-target", type=float, default=DEFAULT_CONFIG["lambda_target"])
     parser.add_argument("--lambda-rel", type=float, default=DEFAULT_CONFIG["lambda_rel"])
@@ -71,11 +61,6 @@ def main() -> dict:
     library = build_antigen_library(train, val)
     cdr_path = args.cdr_annotations if args.cdr_annotations.is_absolute() else root / args.cdr_annotations
     cdr_table = load_cdr_table(cdr_path)
-    epitope_table = None
-    if args.use_epitope_cross_attention or args.epitope_variant != "none":
-        epitope_dir = (args.epitope_dir if args.epitope_dir.is_absolute()
-                       else root / args.epitope_dir)
-        epitope_table = load_epitope_table(epitope_dir)
 
     config = dict(DEFAULT_CONFIG)
     config.update(
@@ -83,12 +68,7 @@ def main() -> dict:
         use_cdr=args.use_cdr,
         use_chunk_attention=args.use_chunk_attention,
         use_cross_attention=args.use_cross_attention,
-        use_epitope_cross_attention=args.use_epitope_cross_attention,
-        epitope_variant=args.epitope_variant,
-        epitope_scope=args.epitope_scope,
-        cdr_query_max_tokens=args.cdr_query_max_tokens,
         cdr_query=args.cdr_query,
-        epitope_max_tokens=args.epitope_max_tokens,
         lambda_target=args.lambda_target,
         lambda_rel=args.lambda_rel,
         lambda_class=args.lambda_class,
@@ -100,17 +80,11 @@ def main() -> dict:
         seed=args.seed,
         device=args.device,
     )
-    bundle = train_stage3_model(train, library, cdr_table, config,
-                                epitope_table=epitope_table,
-                                epitope_max_tokens=args.epitope_max_tokens)
+    bundle = train_stage3_model(train, library, cdr_table, config)
     metrics = evaluate_stage3(bundle, val)
 
     if args.tag:
         tag = args.tag
-    elif args.epitope_variant != "none":
-        tag = f"m6_{args.epitope_variant}_{args.epitope_scope}"
-    elif args.use_epitope_cross_attention:
-        tag = f"m5_epitope_{args.cdr_query}"
     elif args.use_cross_attention:
         tag = f"m4_cross_{args.cdr_query}"
     elif args.use_chunk_attention:

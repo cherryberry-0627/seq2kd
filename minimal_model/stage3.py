@@ -21,7 +21,6 @@ import torch.nn.functional as F
 from torch import nn
 
 from .cdr import CDR_NAMES, build_cdr_masks
-from .epitope import build_epitope_chunk_bias, build_epitope_token_index
 from .metrics import logkd_to_class, macro_f1, mae
 from .tokenizer import AminoAcidTokenizer, build_tokenizer
 from .training import (AFFINITY_TO_ID, ID_TO_AFFINITY, ID_TO_TARGET,
@@ -57,12 +56,7 @@ DEFAULT_CONFIG = {
     "use_cdr": False,
     "use_chunk_attention": False,
     "use_cross_attention": False,
-    "use_epitope_cross_attention": False,
-    "epitope_variant": "none",
-    "epitope_scope": "task2_true",
-    "cdr_query_max_tokens": 64,
     "cdr_query": "all",
-    "epitope_max_tokens": 128,
 }
 
 
@@ -71,10 +65,9 @@ class Stage3CandidateModel(nn.Module):
                  num_heads: int = 4, ff_size: int = 128, num_layers: int = 2,
                  fusion_size: int = 96, dropout: float = 0.1,
                  use_cdr: bool = False, use_chunk_attention: bool = False,
-                 use_cross_attention: bool = False, use_epitope_cross_attention: bool = False,
-                 cdr_query: str = "all"):
+                 use_cross_attention: bool = False, cdr_query: str = "all"):
         super().__init__()
-        if (use_cross_attention or use_epitope_cross_attention) and not use_cdr:
+        if use_cross_attention and not use_cdr:
             raise ValueError("cross-attention requires CDR features")
         if cdr_query not in ("h3", "all"):
             raise ValueError("cdr_query must be 'h3' or 'all'")
@@ -95,15 +88,8 @@ class Stage3CandidateModel(nn.Module):
             hidden_size, num_heads, batch_first=True, dropout=dropout
         ) if (use_cdr and use_cross_attention) else None
         self.cross_norm = nn.LayerNorm(hidden_size) if self.cross_attn is not None else None
-        self.epitope_cross_attn = nn.MultiheadAttention(
-            hidden_size, num_heads, batch_first=True, dropout=dropout
-        ) if (use_cdr and use_epitope_cross_attention) else None
-        self.epitope_cross_norm = (nn.LayerNorm(hidden_size)
-                                   if self.epitope_cross_attn is not None else None)
 
-        extra = ((hidden_size if use_cdr else 0)
-                 + (hidden_size if self.cross_attn else 0)
-                 + (hidden_size if self.epitope_cross_attn else 0))
+        extra = (hidden_size if use_cdr else 0) + (hidden_size if self.cross_attn else 0)
         self.fusion = nn.Sequential(
             nn.Linear(hidden_size * 4 + extra, fusion_size), nn.GELU(), nn.Dropout(dropout))
         self.target_head = nn.Linear(hidden_size + (hidden_size if use_cdr else 0), 5)
@@ -131,35 +117,24 @@ class Stage3CandidateModel(nn.Module):
         flat_masks[invalid, 0] = True
         token_emb = self.encoder_antigen.forward_tokens(flat_ids, flat_masks)
         pooled = self.encoder_antigen.pool_tokens(token_emb, flat_masks)
-        token_emb = token_emb.reshape(bsz, candidates, chunks, length, self.hidden_size)
-        pooled = pooled.reshape(bsz, candidates, chunks, self.hidden_size)
-        return token_emb, pooled
+        return pooled.reshape(bsz, candidates, chunks, self.hidden_size)
 
     def encode_batch(self, batch, vh_tokens=None, vh_pooled=None,
-                     antigen_chunk_emb=None, antigen_token_emb=None):
+                     antigen_chunk_emb=None):
         vh_mask = batch["vh_attention_mask"]
         if vh_tokens is None:
             vh_tokens = self._encode_vh(batch)
         if vh_pooled is None:
             vh_pooled = self.encoder_vh.pool_tokens(vh_tokens, vh_mask)
-        if self.epitope_cross_attn is not None:
-            if antigen_token_emb is None or antigen_chunk_emb is None:
-                token_emb, chunk_emb = self._encode_antigen_chunks(batch)
-                if antigen_token_emb is None:
-                    antigen_token_emb = token_emb
-                if antigen_chunk_emb is None:
-                    antigen_chunk_emb = chunk_emb
-        else:
-            if antigen_chunk_emb is None:
-                _, antigen_chunk_emb = self._encode_antigen_chunks(batch)
-            antigen_token_emb = None
+        if antigen_chunk_emb is None:
+            antigen_chunk_emb = self._encode_antigen_chunks(batch)
         chunk_mask = batch["antigen_chunk_mask"]
-        return vh_tokens, vh_pooled, antigen_token_emb, antigen_chunk_emb, chunk_mask
+        return vh_tokens, vh_pooled, antigen_chunk_emb, chunk_mask
 
     def forward_candidates(self, batch, vh_tokens=None, vh_pooled=None,
-                           antigen_chunk_emb=None, antigen_token_emb=None):
-        vh_tokens, vh_pooled, antigen_token_emb, chunk_emb, chunk_mask = self.encode_batch(
-            batch, vh_tokens, vh_pooled, antigen_chunk_emb, antigen_token_emb)
+                           antigen_chunk_emb=None):
+        vh_tokens, vh_pooled, chunk_emb, chunk_mask = self.encode_batch(
+            batch, vh_tokens, vh_pooled, antigen_chunk_emb)
         bsz, candidates, chunks, _ = chunk_emb.shape
 
         if self.chunk_score is not None:
@@ -200,37 +175,12 @@ class Stage3CandidateModel(nn.Module):
             attended = torch.nan_to_num(self.cross_norm(queries + attended), nan=0.0)
             cross = attended.mean(dim=1).reshape(bsz, candidates, self.hidden_size)
 
-        epitope_cross = None
-        if self.epitope_cross_attn is not None:
-            token_length = antigen_token_emb.shape[3]
-            flat_tokens = antigen_token_emb.reshape(
-                bsz, candidates, chunks * token_length, self.hidden_size)
-            index = batch["epitope_index"].to(flat_tokens.device)
-            index = index.unsqueeze(0).unsqueeze(-1).expand(
-                bsz, -1, -1, self.hidden_size)
-            gathered = torch.gather(flat_tokens, 2, index)  # [B,5,K,H]
-            epitope_mask = batch["epitope_mask"].to(flat_tokens.device)
-            key_padding = ~epitope_mask.unsqueeze(0).expand(bsz, -1, -1)
-            queries = cdr_pooled[:, 2:3, :] if self.cdr_query == "h3" else cdr_pooled
-            q_count = queries.shape[1]
-            q = queries.unsqueeze(1).expand(-1, candidates, -1, -1).reshape(
-                bsz * candidates, q_count, self.hidden_size)
-            k = gathered.reshape(bsz * candidates, -1, self.hidden_size)
-            attended, _ = self.epitope_cross_attn(
-                q, k, k,
-                key_padding_mask=key_padding.reshape(bsz * candidates, -1),
-                need_weights=False)
-            attended = torch.nan_to_num(self.epitope_cross_norm(q + attended), nan=0.0)
-            epitope_cross = attended.mean(dim=1).reshape(bsz, candidates, self.hidden_size)
-
         vh_expanded = vh_pooled.unsqueeze(1).expand(-1, candidates, -1)
         parts = [vh_expanded, antigen, (vh_expanded - antigen).abs(), vh_expanded * antigen]
         if self.use_cdr:
             parts.append(cdr_global.unsqueeze(1).expand(-1, candidates, -1))
         if cross is not None:
             parts.append(cross)
-        if epitope_cross is not None:
-            parts.append(epitope_cross)
         pair = self.fusion(torch.cat(parts, dim=-1))
 
         target_input = torch.cat([vh_pooled, cdr_global], dim=-1) if self.use_cdr else vh_pooled
@@ -247,8 +197,7 @@ class Stage3CandidateModel(nn.Module):
 
 
 def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
-                   target_to_index, cdr_table, epitope_index=None,
-                   epitope_mask=None, epitope_chunk_bias=None, device=None):
+                   target_to_index, cdr_table, device=None):
     vh = tokenizer.tokenize_vh_with_offsets([s["vh_sequence_aa"] for s in samples])
     bsz = len(samples)
     antigen_ids = antigen_tokens["input_ids"].unsqueeze(0).expand(bsz, -1, -1, -1)
@@ -272,12 +221,6 @@ def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
             [AFFINITY_TO_ID[s["affinity_class"]] for s in samples], dtype=torch.long),
         "sample_ids": sample_ids,
     }
-    if epitope_index is not None:
-        batch["epitope_index"] = epitope_index
-    if epitope_mask is not None:
-        batch["epitope_mask"] = epitope_mask
-    if epitope_chunk_bias is not None:
-        batch["epitope_chunk_bias"] = epitope_chunk_bias
     if device is not None:
         batch = {key: value.to(device) if isinstance(value, torch.Tensor) else value
                  for key, value in batch.items()}
@@ -315,13 +258,9 @@ class Stage3Bundle:
     config: dict
     device: torch.device
     history: list
-    epitope_index: torch.Tensor | None = None
-    epitope_mask: torch.Tensor | None = None
-    epitope_chunk_bias: torch.Tensor | None = None
 
 
-def train_stage3_model(train_dataset, library, cdr_table, config=None,
-                       epitope_table=None, epitope_max_tokens=128):
+def train_stage3_model(train_dataset, library, cdr_table, config=None):
     config = {**DEFAULT_CONFIG, **(config or {})}
     torch.manual_seed(config["seed"])
     if torch.cuda.is_available():
@@ -335,46 +274,13 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None,
         key: value.to(device)
         for key, value in tokenizer.tokenize_antigen_chunks(library["sequences"]).items()
     }
-    variant = config.get("epitope_variant", "none")
-    needs_epitope_tokens = (variant in ("pooled", "token_query")
-                            or config["use_epitope_cross_attention"])
-    epitope_index = None
-    epitope_mask = None
-    epitope_chunk_bias = None
-    if needs_epitope_tokens:
-        if epitope_table is None:
-            raise ValueError("epitope_table is required for epitope features")
-        epitope_data = build_epitope_token_index(
-            library, epitope_table, tokenizer, epitope_max_tokens)
-        epitope_index = epitope_data["index"].to(device)
-        epitope_mask = epitope_data["mask"].to(device)
-    if variant == "chunk_bias":
-        if epitope_table is None:
-            raise ValueError("epitope_table is required for chunk bias")
-        epitope_chunk_bias = build_epitope_chunk_bias(
-            library, epitope_table, tokenizer).to(device)
-
-    if variant != "none":
-        from .stage3_variants import Stage3VariantModel
-        model = Stage3VariantModel(
-            tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
-            ff_size=config["ff_size"], num_layers=config["num_layers"],
-            fusion_size=config["fusion_size"], dropout=config["dropout"],
-            use_cdr=config["use_cdr"],
-            use_chunk_attention=config["use_chunk_attention"],
-            cdr_query=config["cdr_query"],
-            epitope_variant=variant,
-            epitope_scope=config["epitope_scope"],
-            cdr_query_max_tokens=config["cdr_query_max_tokens"]).to(device)
-    else:
-        model = Stage3CandidateModel(
-            tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
-            ff_size=config["ff_size"], num_layers=config["num_layers"],
-            fusion_size=config["fusion_size"], dropout=config["dropout"],
-            use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
-            use_cross_attention=config["use_cross_attention"],
-            use_epitope_cross_attention=config["use_epitope_cross_attention"],
-            cdr_query=config["cdr_query"]).to(device)
+    model = Stage3CandidateModel(
+        tokenizer, hidden_size=config["hidden_size"], num_heads=config["num_heads"],
+        ff_size=config["ff_size"], num_layers=config["num_layers"],
+        fusion_size=config["fusion_size"], dropout=config["dropout"],
+        use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
+        use_cross_attention=config["use_cross_attention"],
+        cdr_query=config["cdr_query"]).to(device)
     if config["freeze_encoder"]:
         for parameter in (list(model.encoder_vh.parameters())
                           + list(model.encoder_antigen.parameters())):
@@ -394,9 +300,7 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None,
                                     config["seed"] + epoch):
             samples = [train_dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, tokenizer, antigen_tokens,
-                                   library["target_to_index"], cdr_table,
-                                   epitope_index, epitope_mask,
-                                   epitope_chunk_bias, device)
+                                   library["target_to_index"], cdr_table, device)
             optimizer.zero_grad(set_to_none=True)
             output = model.forward_candidates(batch)
             losses = compute_loss(output, batch, config, epoch)
@@ -414,9 +318,7 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None,
     config["device_used"] = str(device)
     return Stage3Bundle(model=model, tokenizer=tokenizer, antigen_tokens=antigen_tokens,
                         library=library, cdr_table=cdr_table, config=config,
-                        device=device, history=history,
-                        epitope_index=epitope_index, epitope_mask=epitope_mask,
-                        epitope_chunk_bias=epitope_chunk_bias)
+                        device=device, history=history)
 
 
 def predict_stage3(bundle, dataset, batch_size=None):
@@ -429,8 +331,7 @@ def predict_stage3(bundle, dataset, batch_size=None):
             samples = [dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, bundle.tokenizer, bundle.antigen_tokens,
                                    bundle.library["target_to_index"], bundle.cdr_table,
-                                   bundle.epitope_index, bundle.epitope_mask,
-                                   bundle.epitope_chunk_bias, bundle.device)
+                                   bundle.device)
             output = model.forward_candidates(batch)
             target_logits.append(output["target_logits"].cpu().numpy())
             affinity_logits.append(output["affinity_logits"].cpu().numpy())
@@ -511,8 +412,7 @@ def export_stage3_interpretability(bundle, dataset, path, temperature=1.0):
             samples = [dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, bundle.tokenizer, bundle.antigen_tokens,
                                    bundle.library["target_to_index"], bundle.cdr_table,
-                                   bundle.epitope_index, bundle.epitope_mask,
-                                   bundle.epitope_chunk_bias, bundle.device)
+                                   bundle.device)
             output = model.forward_candidates(batch)
             rank_score = output["rank_score"].cpu().numpy()
             log_kd = output["log_kd_pred"].cpu().numpy()
