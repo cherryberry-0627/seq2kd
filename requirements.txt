@@ -1,5 +1,19 @@
-# Tested with Python 3.12 and CUDA 12.1 on the remote GPU notebook.
-# NumPy 1.x is required by the tested PyTorch 2.2.2 build.
-numpy==1.26.4
-torch==2.2.2
+# Tested on the current server:
+#   Python 3.12.3, Linux x86_64
+#   NVIDIA driver 595.71.05, CUDA 12.8, cuDNN 9.7.1
+#   GPU: NVIDIA GeForce RTX 4090 (24 GB)
+#
+# Install:
+#   python -m pip install -r requirements.txt
+#
+# torch is the CUDA 12.8 build. The extra index below provides
+# torch==2.7.0+cu128; the PyPI index remains the source for numpy/biopython.
+--extra-index-url https://download.pytorch.org/whl/cu128
+
+numpy==2.2.6
+torch==2.7.0+cu128
+
+# Only needed to regenerate features/protparam/*.csv with
+# features/protparam/annotate_protparam.py.
+# Training/inference use the precomputed CSV features and do not import Bio.
 biopython==1.88
