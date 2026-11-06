@@ -1,2 +1,5 @@
-numpy>=2.0
-torch>=2.2
+# Tested with Python 3.12 and CUDA 12.1 on the remote GPU notebook.
+# NumPy 1.x is required by the tested PyTorch 2.2.2 build.
+numpy==1.26.4
+torch==2.2.2
+biopython==1.88
