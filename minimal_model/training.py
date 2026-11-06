@@ -88,7 +88,9 @@ def train_model(train_dataset: list[dict], config: dict | None = None) -> dict:
                                 antigen_overlap=config["antigen_overlap"])
     model = TransformerModel(tokenizer, hidden_size=config["hidden_size"],
         num_heads=config["num_heads"], ff_size=config["ff_size"], num_layers=config["num_layers"],
-        fusion_size=config["fusion_size"], dropout=config["dropout"]).to(device)
+        fusion_size=config["fusion_size"], dropout=config["dropout"],
+        protparam_dim=config.get("protparam_dim", 0),
+        protparam_projection_size=config.get("protparam_projection_size", 32)).to(device)
     if config["freeze_encoder"]:
         for parameter in list(model.encoder_vh.parameters()) + list(model.encoder_antigen.parameters()):
             parameter.requires_grad = False

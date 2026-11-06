@@ -72,4 +72,7 @@ def collate_batch(samples: list[dict[str, Any]], tokenizer: AminoAcidTokenizer) 
             "target_labels": target if all(x is not None for x in target) else None,
             "affinity_labels": affinity if all(x is not None for x in affinity) else None,
             "log_kd": torch.tensor(log_kd, dtype=torch.float32) if all(x is not None for x in log_kd) else None,
+            "protparam_features": torch.tensor(
+                [s["protparam_features"] for s in samples], dtype=torch.float32
+            ) if all("protparam_features" in s for s in samples) else None,
             "sample_ids": [s["sample_id"] for s in samples]}

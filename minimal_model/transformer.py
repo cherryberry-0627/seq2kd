@@ -3,6 +3,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 
+
 class TransformerEncoder(nn.Module):
     """字符 embedding + positional embedding + PyTorch TransformerEncoder。"""
     def __init__(self, vocab_size: int, max_length: int, hidden_size: int = 64,
@@ -25,19 +26,34 @@ class TransformerEncoder(nn.Module):
         mask = attention_mask.unsqueeze(-1).to(x.dtype)
         return self.norm((x * mask).sum(dim=1) / mask.sum(dim=1).clamp_min(1.0))
 
+
 class TransformerModel(nn.Module):
-    """VH/抗原双编码器，多任务 target、affinity、log-Kd 输出。"""
+    """VH/抗原双编码器，可选融合 ProtParam 数值特征。"""
     def __init__(self, tokenizer, hidden_size=64, num_heads=4, ff_size=128,
-                 num_layers=2, fusion_size=96, dropout=.1):
+                 num_layers=2, fusion_size=96, dropout=.1, protparam_dim=0,
+                 protparam_projection_size=32):
         super().__init__()
         self.tokenizer = tokenizer
         self.hidden_size = hidden_size
+        self.protparam_dim = protparam_dim
         self.encoder_vh = TransformerEncoder(tokenizer.vocab_size, tokenizer.max_vh_length,
             hidden_size, num_heads, ff_size, num_layers, dropout)
         self.encoder_antigen = TransformerEncoder(tokenizer.vocab_size, tokenizer.antigen_chunk_length,
             hidden_size, num_heads, ff_size, num_layers, dropout)
-        self.fusion = nn.Sequential(nn.Linear(hidden_size * 4, fusion_size), nn.GELU(), nn.Dropout(dropout))
-        self.target_head = nn.Linear(hidden_size, 5)
+        if protparam_dim:
+            self.protparam_projection = nn.Sequential(
+                nn.Linear(protparam_dim, protparam_projection_size), nn.LayerNorm(protparam_projection_size), nn.GELU())
+            self.vh_protparam_projection = nn.Sequential(
+                nn.Linear(protparam_dim // 2, protparam_projection_size), nn.LayerNorm(protparam_projection_size), nn.GELU())
+            target_input_size = hidden_size + protparam_projection_size
+            fusion_input_size = hidden_size * 4 + protparam_projection_size
+        else:
+            self.protparam_projection = None
+            self.vh_protparam_projection = None
+            target_input_size = hidden_size
+            fusion_input_size = hidden_size * 4
+        self.fusion = nn.Sequential(nn.Linear(fusion_input_size, fusion_size), nn.GELU(), nn.Dropout(dropout))
+        self.target_head = nn.Linear(target_input_size, 5)
         self.affinity_head = nn.Linear(fusion_size, 3)
         self.regression_head = nn.Linear(fusion_size, 1)
 
@@ -46,7 +62,14 @@ class TransformerModel(nn.Module):
         ids = batch["antigen_input_ids"]
         masks = batch["antigen_attention_mask"]
         bsz, chunks, length = ids.shape
-        ant = self.encoder_antigen(ids.reshape(bsz * chunks, length), masks.reshape(bsz * chunks, length))
+        flat_ids = ids.reshape(bsz * chunks, length)
+        flat_masks = masks.reshape(bsz * chunks, length).clone()
+        # Padded chunk rows have an all-False mask; PyTorch attention would
+        # produce NaN gradients for an all-masked row. Keep one harmless token
+        # valid for those rows, then exclude the whole chunk via chunk_mask.
+        invalid_chunks = ~flat_masks.any(dim=-1)
+        flat_masks[invalid_chunks, 0] = True
+        ant = self.encoder_antigen(flat_ids, flat_masks)
         ant = torch.nan_to_num(ant.reshape(bsz, chunks, self.hidden_size), nan=0.0)
         chunk_mask = batch["antigen_chunk_mask"].unsqueeze(-1).to(ant.dtype)
         antigen = (ant * chunk_mask).sum(dim=1) / chunk_mask.sum(dim=1).clamp_min(1.0)
@@ -54,9 +77,20 @@ class TransformerModel(nn.Module):
 
     def forward(self, batch: dict[str, torch.Tensor], task: str = "both") -> dict[str, torch.Tensor]:
         vh, antigen = self.encode_batch(batch)
-        output = {"vh_embedding": vh, "antigen_embedding": antigen, "target_logits": self.target_head(vh)}
+        protparam = batch.get("protparam_features")
+        if self.protparam_dim:
+            if protparam is None:
+                raise ValueError("protparam_features are required when protparam_dim is enabled")
+            protparam = protparam.to(vh.dtype)
+            vh_extra = self.vh_protparam_projection(protparam[:, :self.protparam_dim // 2])
+            target_input = torch.cat([vh, vh_extra], dim=-1)
+        else:
+            target_input = vh
+        output = {"vh_embedding": vh, "antigen_embedding": antigen, "target_logits": self.target_head(target_input)}
         if task != "target":
             fused = torch.cat([vh, antigen, torch.abs(vh - antigen), vh * antigen], dim=-1)
+            if self.protparam_dim:
+                fused = torch.cat([fused, self.protparam_projection(protparam)], dim=-1)
             hidden = self.fusion(fused)
             output.update({"fusion": hidden, "affinity_logits": self.affinity_head(hidden),
                            "log_kd_pred": self.regression_head(hidden).squeeze(-1)})
