@@ -1,0 +1,2 @@
+sample_id,target_id,predicted_affinity_class,predicted_log_kd_nm
+example_sample_id,T01,medium,0.5000
