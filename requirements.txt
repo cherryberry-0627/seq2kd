@@ -17,3 +17,11 @@ torch==2.7.0+cu128
 # features/protparam/annotate_protparam.py.
 # Training/inference use the precomputed CSV features and do not import Bio.
 biopython==1.88
+
+# CDR annotation (scripts/annotate_cdr.py). Use a separate venv, because
+# ANARCI requires the system HMMER3 binaries (hmmscan):
+#   apt-get install hmmer
+#   python -m venv .venv-anarci
+#   . .venv-anarci/bin/activate
+#   pip install anarci==2026.2.13.2 biopython==1.88
+anarci==2026.2.13.2
