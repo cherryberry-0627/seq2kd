@@ -79,9 +79,11 @@ class PairBiasCrossAttention(nn.Module):
         self.pair_bias = nn.Parameter(torch.zeros(24, 24))
         self.prop_weight = nn.Parameter(torch.eye(5) * 0.1)
         self.bias_scale = nn.Parameter(torch.tensor(1.0))
+        self.external_scale = nn.Parameter(torch.tensor(0.5))
 
     def forward(self, paratope_tokens, paratope_ids, paratope_mask,
-                epitope_tokens, epitope_ids, epitope_mask):
+                epitope_tokens, epitope_ids, epitope_mask,
+                external_bias=None):
         """
         paratope_tokens [B,Q,H], paratope_ids [B,Q], paratope_mask [B,Q]
         epitope_tokens  [B,5,K,H], epitope_ids [B,5,K], epitope_mask [B,5,K]
@@ -109,6 +111,10 @@ class PairBiasCrossAttention(nn.Module):
             dim=3,
             index=epitope_ids.unsqueeze(2).expand(-1, -1, q_len, -1))
         bias = self.bias_scale * (bilinear + learned)      # [B,5,Q,K]
+        if external_bias is not None:
+            if external_bias.dim() == 3:
+                external_bias = external_bias.unsqueeze(1)
+            bias = bias + self.external_scale * external_bias.to(bias.dtype)
         logits = logits + bias.unsqueeze(2)
 
         key_mask = ~epitope_mask[:, :, None, None, :]  # [B,5,1,1,K]

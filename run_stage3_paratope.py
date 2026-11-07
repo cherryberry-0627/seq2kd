@@ -35,6 +35,8 @@ def main() -> dict:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument("--cdr-annotations", type=Path, default=Path("data/cdr_annotations.csv"))
     parser.add_argument("--epitope-dir", type=Path, default=Path("features/epitope"))
+    parser.add_argument("--paraem-cache", type=Path, default=None,
+                        help="optional ParaEM precompute cache (bias/*.pt)")
     parser.add_argument("--max-vh-length", type=int, default=PE_CONFIG["max_vh_length"])
     parser.add_argument("--max-paratope-tokens", type=int, default=64)
     parser.add_argument("--epitope-max-tokens", type=int, default=128)
@@ -56,6 +58,10 @@ def main() -> dict:
     cdr_table = load_cdr_table(cdr_path)
     epitope_dir = args.epitope_dir if args.epitope_dir.is_absolute() else root / args.epitope_dir
     epitope_table = load_epitope_table(epitope_dir)
+    paraem_cache = None
+    if args.paraem_cache is not None:
+        paraem_cache = (args.paraem_cache if args.paraem_cache.is_absolute()
+                        else root / args.paraem_cache)
 
     config = dict(PE_CONFIG)
     config.update(
@@ -68,7 +74,8 @@ def main() -> dict:
         lambda_target=args.lambda_target,
         device=args.device,
     )
-    bundle = train_pe_model(train, library, cdr_table, epitope_table, config)
+    bundle = train_pe_model(train, library, cdr_table, epitope_table, config,
+                            paraem_cache=paraem_cache)
     metrics = evaluate_pe(bundle, val)
 
     tag = args.tag or f"pe_vh{args.max_vh_length}_seed{args.seed}"
@@ -77,6 +84,7 @@ def main() -> dict:
         "config": bundle.config,
         "n_train": len(train),
         "n_val": len(val),
+        "paraem_cache": str(paraem_cache) if paraem_cache else None,
         "epitope_tokens_per_target": bundle.epitope_mask.sum(dim=1).tolist(),
         "history": bundle.history,
         **metrics,

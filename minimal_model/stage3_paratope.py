@@ -8,6 +8,7 @@ with a residue-pair bias. Epitope features are used only on the true pair
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -109,7 +110,17 @@ class Stage3ParatopeModel(Stage3CandidateModel):
             flat_ids, 2, batch["epitope_index"].unsqueeze(0).expand(bsz, -1, -1))
         e_mask = batch["epitope_mask"].unsqueeze(0).expand(bsz, -1, -1)
 
-        pe_cross = self.pe_cross(p_tokens, p_ids, p_mask, e_tokens, e_ids, e_mask)
+        external_bias = None
+        paraem_bias = batch.get("paraem_bias")
+        if paraem_bias is not None:
+            if paraem_bias.dim() == 3:
+                paraem_bias = paraem_bias.unsqueeze(1)
+            true_mask_bias = F.one_hot(
+                batch["target_index"], candidates).to(paraem_bias.dtype)
+            external_bias = paraem_bias * true_mask_bias.unsqueeze(-1).unsqueeze(-1)
+        pe_cross = self.pe_cross(
+            p_tokens, p_ids, p_mask, e_tokens, e_ids, e_mask,
+            external_bias=external_bias)
         true_mask = F.one_hot(batch["target_index"], candidates).to(pe_cross.dtype)
         pe_cross = pe_cross * true_mask.unsqueeze(-1)
 
@@ -136,7 +147,7 @@ class Stage3ParatopeModel(Stage3CandidateModel):
 
 def collate_pe(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
                target_to_index, cdr_table, epitope_index, epitope_mask,
-               max_paratope_tokens=64, device=None):
+               max_paratope_tokens=64, paraem_cache=None, device=None):
     vh = tokenizer.tokenize_vh_with_offsets([s["vh_sequence_aa"] for s in samples])
     bsz = len(samples)
     antigen_ids = antigen_tokens["input_ids"].unsqueeze(0).expand(bsz, -1, -1, -1)
@@ -166,6 +177,19 @@ def collate_pe(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
             [AFFINITY_TO_ID[s["affinity_class"]] for s in samples], dtype=torch.long),
         "sample_ids": sample_ids,
     }
+    if paraem_cache is not None:
+        cache = Path(paraem_cache)
+        q_max = int(max_paratope_tokens)
+        k_max = int(epitope_mask.shape[1])
+        bias = torch.zeros((bsz, q_max, k_max), dtype=torch.float32)
+        for i, sample_id in enumerate(sample_ids):
+            path = cache / "bias" / f"{sample_id}.pt"
+            if path.is_file():
+                item = torch.load(path, map_location="cpu").float()
+                q = min(item.shape[0], q_max)
+                k = min(item.shape[1], k_max)
+                bias[i, :q, :k] = item[:q, :k]
+        batch["paraem_bias"] = bias
     if device is not None:
         batch = {key: value.to(device) if isinstance(value, torch.Tensor) else value
                  for key, value in batch.items()}
@@ -185,9 +209,11 @@ class PeBundle:
     config: dict
     device: torch.device
     history: list
+    paraem_cache: Path | None = None
 
 
-def train_pe_model(train_dataset, library, cdr_table, epitope_table, config=None):
+def train_pe_model(train_dataset, library, cdr_table, epitope_table, config=None,
+                   paraem_cache=None):
     config = {**PE_CONFIG, **(config or {})}
     torch.manual_seed(config["seed"])
     if torch.cuda.is_available():
@@ -223,7 +249,7 @@ def train_pe_model(train_dataset, library, cdr_table, epitope_table, config=None
             batch = collate_pe(samples, tokenizer, antigen_tokens,
                                library["target_to_index"], cdr_table,
                                epitope_index, epitope_mask,
-                               config["max_paratope_tokens"], device)
+                               config["max_paratope_tokens"], paraem_cache, device)
             optimizer.zero_grad(set_to_none=True)
             output = model.forward_candidates(batch)
             losses = compute_loss(output, batch, config, epoch)
@@ -241,7 +267,8 @@ def train_pe_model(train_dataset, library, cdr_table, epitope_table, config=None
     return PeBundle(model=model, tokenizer=tokenizer, antigen_tokens=antigen_tokens,
                     library=library, cdr_table=cdr_table,
                     epitope_index=epitope_index, epitope_mask=epitope_mask,
-                    config=config, device=device, history=history)
+                    config=config, device=device, history=history,
+                    paraem_cache=paraem_cache)
 
 
 def predict_pe(bundle: PeBundle, dataset, batch_size=None):
@@ -255,7 +282,8 @@ def predict_pe(bundle: PeBundle, dataset, batch_size=None):
             batch = collate_pe(samples, bundle.tokenizer, bundle.antigen_tokens,
                                bundle.library["target_to_index"], bundle.cdr_table,
                                bundle.epitope_index, bundle.epitope_mask,
-                               bundle.config["max_paratope_tokens"], bundle.device)
+                               bundle.config["max_paratope_tokens"],
+                               bundle.paraem_cache, bundle.device)
             output = model.forward_candidates(batch)
             target_logits.append(output["target_logits"].cpu().numpy())
             affinity_logits.append(output["affinity_logits"].cpu().numpy())
