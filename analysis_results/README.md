@@ -92,6 +92,7 @@ fusion predicts the candidate/target identity, with a gradient reversal layer.
   Antigen identity is informative for affinity. Lower λ / a separate projection
   branch / counterfactual ranking instead of identity invariance would be the
   next variants to test.
+- Full write-up: [GRL_COUNTERFACTUAL_EXPERIMENT.md](grl/GRL_COUNTERFACTUAL_EXPERIMENT.md)
 
 ## Key numbers
 
