@@ -111,7 +111,7 @@ class PairBiasCrossAttention(nn.Module):
         bias = self.bias_scale * (bilinear + learned)      # [B,5,Q,K]
         logits = logits + bias.unsqueeze(2)
 
-        key_mask = ~epitope_mask.unsqueeze(1).unsqueeze(2)  # [B,1,1,K]
+        key_mask = ~epitope_mask[:, :, None, None, :]  # [B,5,1,1,K]
         logits = logits.masked_fill(key_mask, torch.finfo(logits.dtype).min)
         weights = torch.softmax(logits, dim=-1)
         weights = torch.nan_to_num(weights, nan=0.0, posinf=0.0, neginf=0.0)
