@@ -1,0 +1,103 @@
+{
+  "epochs": 50,
+  "vae_epochs": 50,
+  "baseline": "skipped (teacher trained for filtering only)",
+  "cdr_h2_h3_vq": {
+    "label": "cdr_h2_h3_vq",
+    "filter": {
+      "generated": 3267,
+      "quality": 3267,
+      "novel": 3202,
+      "esm_pass": 3267
+    },
+    "teacher_accepted": 1491,
+    "target_macro_f1_vh_only": 0.7537674278252686,
+    "target_accuracy_vh_only": 0.7542134831460674,
+    "target_macro_f1_ranking": 0.7502727828991973,
+    "target_accuracy_ranking": 0.75,
+    "positive_affinity_macro_f1": 0.585311370563133,
+    "affinity_accuracy": 0.5941011235955056,
+    "positive_log_kd_mae": 0.6822026708593218,
+    "ranking_mrr": 0.846441947565543,
+    "ranking_mean_rank": 1.473314606741573,
+    "combined_score_vh_only": 0.6616037406442958,
+    "combined_score_ranking": 0.6605553471664745,
+    "per_class_f1_vh_only": {
+      "T01": 0.7850467289719627,
+      "T02": 0.7443181818181818,
+      "T03": 0.7611940298507464,
+      "T04": 0.6321243523316061,
+      "T05": 0.8461538461538461
+    },
+    "per_class_f1_ranking": {
+      "T01": 0.779874213836478,
+      "T02": 0.7319884726224783,
+      "T03": 0.7599999999999999,
+      "T04": 0.6567164179104478,
+      "T05": 0.8227848101265822
+    },
+    "per_class_affinity_f1": {
+      "medium": 0.5103734439834025,
+      "strong": 0.685121107266436,
+      "weak": 0.5604395604395604
+    },
+    "n_samples": 712,
+    "augmentation_seconds": 279.5235288478434,
+    "final_train_loss": 0.48249052324105257,
+    "final_train_epoch": 50,
+    "codebook_usage": [
+      65
+    ],
+    "codebook_size": 128
+  },
+  "cdr_h2_h3_rq": {
+    "label": "cdr_h2_h3_rq",
+    "filter": {
+      "generated": 3267,
+      "quality": 3267,
+      "novel": 3230,
+      "esm_pass": 3267
+    },
+    "teacher_accepted": 1522,
+    "target_macro_f1_vh_only": 0.7453664364262673,
+    "target_accuracy_vh_only": 0.7401685393258427,
+    "target_macro_f1_ranking": 0.7655879843138734,
+    "target_accuracy_ranking": 0.7584269662921348,
+    "positive_affinity_macro_f1": 0.5628410572289212,
+    "affinity_accuracy": 0.5800561797752809,
+    "positive_log_kd_mae": 0.6929548458228122,
+    "ranking_mrr": 0.8540730337078652,
+    "ranking_mean_rank": 1.4311797752808988,
+    "combined_score_vh_only": 0.6493372029390105,
+    "combined_score_ranking": 0.6554036673052923,
+    "per_class_f1_vh_only": {
+      "T01": 0.7756410256410258,
+      "T02": 0.7288629737609329,
+      "T03": 0.7312348668280872,
+      "T04": 0.6635071090047393,
+      "T05": 0.8275862068965517
+    },
+    "per_class_f1_ranking": {
+      "T01": 0.7702265372168284,
+      "T02": 0.7507163323782234,
+      "T03": 0.7554479418886199,
+      "T04": 0.6731707317073171,
+      "T05": 0.8783783783783783
+    },
+    "per_class_affinity_f1": {
+      "medium": 0.49785407725321884,
+      "strong": 0.6863711001642036,
+      "weak": 0.504297994269341
+    },
+    "n_samples": 712,
+    "augmentation_seconds": 281.9290163833648,
+    "final_train_loss": 0.5225545143491822,
+    "final_train_epoch": 50,
+    "codebook_usage": [
+      56,
+      64
+    ],
+    "num_codebooks": 2,
+    "codebook_size": 64
+  }
+}

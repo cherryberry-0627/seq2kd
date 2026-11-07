@@ -1,0 +1,119 @@
+{
+  "config": {
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "epochs": 10,
+    "batch_size": 16,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "seed": 2028,
+    "loss_weights": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "device": "auto",
+    "freeze_encoder": false,
+    "grad_clip": 1.0,
+    "device_used": "cuda"
+  },
+  "n_train": 319,
+  "n_val": 68,
+  "n_test": 71,
+  "note": "TNF 只有单一 target_id；任务一退化，不报告 target Macro-F1。",
+  "final_train_loss": 0.6908730301176866,
+  "val": {
+    "split": "val",
+    "n_samples": 68,
+    "affinity_macro_f1": 0.7717171717171718,
+    "log_kd_mae": 0.5785066603108744,
+    "per_class_f1": {
+      "medium": 0.8666666666666667,
+      "strong": 0.8484848484848485,
+      "weak": 0.6
+    },
+    "confusion": {
+      "medium": {
+        "medium": 26,
+        "strong": 4,
+        "weak": 0
+      },
+      "strong": {
+        "medium": 3,
+        "strong": 28,
+        "weak": 1
+      },
+      "weak": {
+        "medium": 1,
+        "strong": 2,
+        "weak": 3
+      }
+    },
+    "truth_distribution": {
+      "strong": 32,
+      "medium": 30,
+      "weak": 6
+    },
+    "prediction_distribution": {
+      "strong": 34,
+      "medium": 30,
+      "weak": 4
+    },
+    "pred_log_kd_min": -1.4087510108947754,
+    "pred_log_kd_max": 1.1474013328552246,
+    "pred_log_kd_mean": 0.008733229382949717,
+    "target_prediction_distribution": {
+      "T01": 68
+    }
+  },
+  "test": {
+    "split": "test",
+    "n_samples": 71,
+    "affinity_macro_f1": 0.5031645569620253,
+    "log_kd_mae": 0.7387204645343601,
+    "per_class_f1": {
+      "medium": 0.75,
+      "strong": 0.759493670886076,
+      "weak": 0.0
+    },
+    "confusion": {
+      "medium": {
+        "medium": 21,
+        "strong": 10,
+        "weak": 0
+      },
+      "strong": {
+        "medium": 3,
+        "strong": 30,
+        "weak": 0
+      },
+      "weak": {
+        "medium": 1,
+        "strong": 6,
+        "weak": 0
+      }
+    },
+    "truth_distribution": {
+      "medium": 31,
+      "strong": 33,
+      "weak": 7
+    },
+    "prediction_distribution": {
+      "medium": 25,
+      "strong": 46
+    },
+    "pred_log_kd_min": -1.3867369890213013,
+    "pred_log_kd_max": 1.1485404968261719,
+    "pred_log_kd_mean": -0.08465588145272833,
+    "target_prediction_distribution": {
+      "T01": 71
+    }
+  }
+}

@@ -1,0 +1,16 @@
+=== teacher (filter only; baseline eval skipped) ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3.py:362: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+teacher trained
+{"n_regions": 3267, "max_length": 49}
+=== VQ-VAE ===
+/root/autodl-tmp/seq2kd/minimal_model/vq_rq_cdr_vae.py:152: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{"teacher_accepted": 1491, "codebook_usage": [65], "target_macro_f1_ranking": 0.7502727828991973, "positive_affinity_macro_f1": 0.585311370563133, "positive_log_kd_mae": 0.6822026708593218, "combined_score_vh_only": 0.6616037406442958, "combined_score_ranking": 0.6605553471664745}
+=== RQ-VAE ===
+{"teacher_accepted": 1522, "codebook_usage": [56, 64], "target_macro_f1_ranking": 0.7655879843138734, "positive_affinity_macro_f1": 0.5628410572289212, "positive_log_kd_mae": 0.6929548458228122, "combined_score_vh_only": 0.6493372029390105, "combined_score_ranking": 0.6554036673052923}
+metrics -> /root/autodl-tmp/seq2kd/results/vq_rq_fast_metrics.json

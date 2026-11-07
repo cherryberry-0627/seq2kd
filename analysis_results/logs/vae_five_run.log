@@ -1,0 +1,75 @@
+=== LOO KNN soft labels ===
+=== teacher (filter only) ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3.py:400: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+teacher trained
+=== continuous CDR-H2+H3 VAE augmentation ===
+/root/autodl-tmp/seq2kd/minimal_model/cdr_sequence_vae.py:72: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+{"generated": 3267, "esm_pass": 3267, "quality": 3267, "novel": 3141, "teacher_accepted": 1718}
+=== fused Stage3: VAE + 2mer branch + KNN distillation ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{"target_macro_f1_vh_only": 0.8154142240263157, "target_macro_f1_ranking": 0.8230037511566082, "positive_affinity_macro_f1": 0.6505235707363367, "positive_log_kd_mae": 0.6352772057333339, "combined_score_vh_only": 0.7111340059622792, "combined_score_ranking": 0.7134108641013669}
+{
+  "fused_base": {
+    "target_macro_f1_vh_only": 0.8154142240263157,
+    "target_macro_f1_ranking": 0.8230037511566082,
+    "positive_affinity_macro_f1": 0.6505235707363367,
+    "positive_log_kd_mae": 0.6352772057333339,
+    "combined_score_vh_only": 0.7111340059622792,
+    "combined_score_ranking": 0.7134108641013669
+  },
+  "fused_base_probe": {
+    "target_f1": 0.8154142240263157,
+    "affinity_f1": 0.6505235707363367,
+    "log_kd_mae": 0.6352772057333339,
+    "combined": 0.7111340059622792,
+    "target_acc": 0.8146067415730337,
+    "affinity_acc": 0.6615168539325843
+  },
+  "knn_k3": {
+    "target_f1": 0.8269858201169201,
+    "affinity_f1": 0.6297571602100128,
+    "log_kd_mae": 0.6760567965845065,
+    "combined": 0.7002008127062919,
+    "target_acc": 0.824438202247191,
+    "affinity_acc": 0.6362359550561798
+  },
+  "adaptive_gate": {
+    "target_f1": 0.8637785746289396,
+    "affinity_f1": 0.6513936224016509,
+    "log_kd_mae": 0.6254932048295269,
+    "combined": 0.7276600293840925,
+    "target_acc": 0.8595505617977528,
+    "affinity_acc": 0.6573033707865169
+  },
+  "multi_view_knn": {
+    "target_f1": 0.8199759999515832,
+    "affinity_f1": 0.6318084046018194,
+    "log_kd_mae": 0.6773589536278719,
+    "combined": 0.6985879247112341,
+    "target_acc": 0.8188202247191011,
+    "affinity_acc": 0.6390449438202247
+  },
+  "task_specific_gate": {
+    "target_f1": 0.8458307497658035,
+    "affinity_f1": 0.6569294755034071,
+    "log_kd_mae": 0.6293294745803367,
+    "combined": 0.7235418833043746,
+    "target_acc": 0.8412921348314607,
+    "affinity_acc": 0.6671348314606742
+  },
+  "best": {
+    "name": "learned_metric_w0.5",
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.647258179397701,
+    "log_kd_mae": 0.6310042859842754,
+    "combined": 0.7657786802935808,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6544943820224719
+  }
+}
+metrics -> /root/autodl-tmp/seq2kd/results/vae_five_innovation_metrics.json

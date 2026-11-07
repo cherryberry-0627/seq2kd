@@ -1,0 +1,136 @@
+{"esm_embedding_seconds": 4.504239970818162, "esm_embedding_dim": 320}
+=== M2 + ESM2 baseline ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3.py:362: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+{
+  "target_macro_f1_vh_only": 0.7388539257593593,
+  "target_accuracy_vh_only": 0.7401685393258427,
+  "target_macro_f1_ranking": 0.7398506026116707,
+  "target_accuracy_ranking": 0.7401685393258427,
+  "positive_affinity_macro_f1": 0.5768049122928604,
+  "affinity_accuracy": 0.5898876404494382,
+  "positive_log_kd_mae": 0.6840840724094417,
+  "ranking_mrr": 0.8398408239700375,
+  "ranking_mean_rank": 1.4943820224719102,
+  "combined_score_vh_only": 0.6538231843586566,
+  "combined_score_ranking": 0.65412218741435,
+  "per_class_f1_vh_only": {
+    "T01": 0.7932203389830508,
+    "T02": 0.7359050445103856,
+    "T03": 0.7494033412887828,
+    "T04": 0.5981308411214952,
+    "T05": 0.8176100628930818
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.8068965517241379,
+    "T02": 0.7578347578347578,
+    "T03": 0.7330097087378641,
+    "T04": 0.5607476635514019,
+    "T05": 0.8407643312101911
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.4989517819706499,
+    "strong": 0.687603305785124,
+    "weak": 0.543859649122807
+  },
+  "n_samples": 712,
+  "wall_seconds": 191.25662560015917
+}
+=== M2 + ESM2 + scheme1 controlled mutation (decoupled) ===
+{
+  "generated": {
+    "requested": 3280,
+    "generated": 3280,
+    "valid": 3280,
+    "unique": 3280
+  },
+  "filter": {
+    "input": 3280,
+    "accepted": 2881,
+    "rejected": 399
+  },
+  "n_train_after": 6214
+}
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.7290321405292588,
+  "target_accuracy_vh_only": 0.7331460674157303,
+  "target_macro_f1_ranking": 0.7447768834337126,
+  "target_accuracy_ranking": 0.7528089887640449,
+  "positive_affinity_macro_f1": 0.5602834354080616,
+  "affinity_accuracy": 0.5758426966292135,
+  "positive_log_kd_mae": 0.7476872184739599,
+  "ranking_mrr": 0.8468867041198502,
+  "ranking_mean_rank": 1.476123595505618,
+  "combined_score_vh_only": 0.6339635813186562,
+  "combined_score_ranking": 0.6386870041899924,
+  "per_class_f1_vh_only": {
+    "T01": 0.7720364741641337,
+    "T02": 0.7319884726224783,
+    "T03": 0.7384615384615385,
+    "T04": 0.6051282051282051,
+    "T05": 0.7975460122699386
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.7711598746081505,
+    "T02": 0.7652173913043478,
+    "T03": 0.7806122448979591,
+    "T04": 0.6237623762376238,
+    "T05": 0.783132530120482
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.521186440677966,
+    "strong": 0.6722689075630253,
+    "weak": 0.48739495798319327
+  },
+  "n_samples": 712,
+  "wall_seconds": 359.74738235771656
+}
+=== M2 + ESM2 + scheme2 conditional latent VAE (decoupled) ===
+{
+  "generated": 3333,
+  "accepted": 3123,
+  "n_train_after": 6456
+}
+{
+  "target_macro_f1_vh_only": 0.712277502853899,
+  "target_accuracy_vh_only": 0.7162921348314607,
+  "target_macro_f1_ranking": 0.7206985537293118,
+  "target_accuracy_ranking": 0.7219101123595506,
+  "positive_affinity_macro_f1": 0.5799604497958134,
+  "affinity_accuracy": 0.5898876404494382,
+  "positive_log_kd_mae": 0.7284994109596098,
+  "ranking_mrr": 0.8259129213483145,
+  "ranking_mean_rank": 1.5547752808988764,
+  "combined_score_vh_only": 0.6391820113667727,
+  "combined_score_ranking": 0.6417083266293965,
+  "per_class_f1_vh_only": {
+    "T01": 0.7522388059701492,
+    "T02": 0.719242902208202,
+    "T03": 0.7216494845360825,
+    "T04": 0.6197183098591549,
+    "T05": 0.7485380116959064
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.7507692307692309,
+    "T02": 0.7284345047923323,
+    "T03": 0.7222222222222223,
+    "T04": 0.6301369863013699,
+    "T05": 0.7719298245614035
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.5267665952890793,
+    "strong": 0.6666666666666667,
+    "weak": 0.5464480874316939
+  },
+  "n_samples": 712,
+  "wall_seconds": 370.7064280677587
+}
+=== summary ===
+esm2_baseline {"target_macro_f1_ranking": 0.7398506026116707, "positive_affinity_macro_f1": 0.5768049122928604, "positive_log_kd_mae": 0.6840840724094417, "ranking_mrr": 0.8398408239700375, "combined_score_ranking": 0.65412218741435}
+esm2_scheme1_decoupled {"target_macro_f1_ranking": 0.7447768834337126, "positive_affinity_macro_f1": 0.5602834354080616, "positive_log_kd_mae": 0.7476872184739599, "ranking_mrr": 0.8468867041198502, "combined_score_ranking": 0.6386870041899924}
+esm2_scheme2_decoupled {"target_macro_f1_ranking": 0.7206985537293118, "positive_affinity_macro_f1": 0.5799604497958134, "positive_log_kd_mae": 0.7284994109596098, "ranking_mrr": 0.8259129213483145, "combined_score_ranking": 0.6417083266293965}
+metrics -> results/esm_augmentation_metrics.json

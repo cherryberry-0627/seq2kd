@@ -1,0 +1,77 @@
+=== fast LOO KNN soft labels ===
+=== teacher (filter only) ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3.py:400: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+teacher trained
+=== continuous CDR-H2+H3 VAE augmentation ===
+/root/autodl-tmp/seq2kd/minimal_model/cdr_sequence_vae.py:72: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+{"generated": 3267, "esm_pass": 3267, "quality": 3267, "novel": 3141, "teacher_accepted": 1684}
+=== fused Stage3: VAE + 2mer + KNN distill + paratope-epitope ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3_paratope_fusion.py:215: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+{"target_macro_f1_vh_only": 0.8153743205494642, "target_macro_f1_ranking": 0.8185508158260142, "positive_affinity_macro_f1": 0.6121626883010193, "positive_log_kd_mae": 0.652451576009813, "combined_score_vh_only": 0.6946902112684787, "combined_score_ranking": 0.6956431598514438}
+{
+  "fused_base": {
+    "target_macro_f1_vh_only": 0.8153743205494642,
+    "target_macro_f1_ranking": 0.8185508158260142,
+    "positive_affinity_macro_f1": 0.6121626883010193,
+    "positive_log_kd_mae": 0.652451576009813,
+    "combined_score_vh_only": 0.6946902112684787,
+    "combined_score_ranking": 0.6956431598514438
+  },
+  "fused_base_probe": {
+    "target_f1": 0.8153743205494642,
+    "affinity_f1": 0.6121626883010193,
+    "log_kd_mae": 0.652451576009813,
+    "combined": 0.6946902112684787,
+    "target_acc": 0.8117977528089888,
+    "affinity_acc": 0.6264044943820225
+  },
+  "knn_k3": {
+    "target_f1": 0.8269858201169201,
+    "affinity_f1": 0.6297571602100128,
+    "log_kd_mae": 0.6760567965845065,
+    "combined": 0.7002008127062919,
+    "target_acc": 0.824438202247191,
+    "affinity_acc": 0.6362359550561798
+  },
+  "adaptive_gate": {
+    "target_f1": 0.8585220325901959,
+    "affinity_f1": 0.6387361988852668,
+    "log_kd_mae": 0.6313085355832442,
+    "combined": 0.7206352856598344,
+    "target_acc": 0.8539325842696629,
+    "affinity_acc": 0.6446629213483146
+  },
+  "task_specific_gate": {
+    "target_f1": 0.8509303242785151,
+    "affinity_f1": 0.6462630317447445,
+    "log_kd_mae": 0.6351763328369404,
+    "combined": 0.7203153001477505,
+    "target_acc": 0.8469101123595506,
+    "affinity_acc": 0.6558988764044944
+  },
+  "late_fusion_0.5": {
+    "target_f1": 0.8633155523164474,
+    "affinity_f1": 0.641379208769599,
+    "log_kd_mae": 0.6059002966008753,
+    "combined": 0.7274448368591406,
+    "target_acc": 0.8595505617977528,
+    "affinity_acc": 0.651685393258427
+  },
+  "best": {
+    "name": "learned_metric_w0.5",
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.647258179397701,
+    "log_kd_mae": 0.6310042859842754,
+    "combined": 0.7657786802935808,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6544943820224719
+  }
+}
+metrics -> /root/autodl-tmp/seq2kd/results/vae_paratope_fusion_metrics.json

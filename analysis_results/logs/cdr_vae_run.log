@@ -1,0 +1,133 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3.py:362: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+=== baseline ===
+{
+  "target_macro_f1_vh_only": 0.7433625330796775,
+  "target_accuracy_vh_only": 0.75,
+  "target_macro_f1_ranking": 0.739672977075358,
+  "target_accuracy_ranking": 0.7457865168539326,
+  "positive_affinity_macro_f1": 0.5871631765155861,
+  "affinity_accuracy": 0.5955056179775281,
+  "positive_log_kd_mae": 0.7083116665199571,
+  "ranking_mrr": 0.8453183520599251,
+  "ranking_mean_rank": 1.476123595505618,
+  "combined_score_vh_only": 0.6545613300633658,
+  "combined_score_ranking": 0.65345446326207,
+  "per_class_f1_vh_only": {
+    "T01": 0.7639751552795031,
+    "T02": 0.7762039660056658,
+    "T03": 0.7506172839506173,
+    "T04": 0.6333333333333333,
+    "T05": 0.7926829268292682
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.7476038338658146,
+    "T02": 0.7640449438202247,
+    "T03": 0.7577937649880097,
+    "T04": 0.6214689265536724,
+    "T05": 0.8074534161490684
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.5301204819277109,
+    "strong": 0.6770833333333334,
+    "weak": 0.5542857142857143
+  },
+  "n_samples": 712,
+  "final_train_loss": 0.48666821039728025,
+  "final_train_epoch": 50
+}
+/root/autodl-tmp/seq2kd/minimal_model/cdr_sequence_vae.py:72: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+=== cdr_h3 ===
+{
+  "filter": {
+    "generated": 3271,
+    "quality": 3271,
+    "novel": 2964,
+    "esm_pass": 3271
+  },
+  "teacher_accepted": 1902,
+  "target_macro_f1_vh_only": 0.7305832391958582,
+  "target_accuracy_vh_only": 0.7331460674157303,
+  "target_macro_f1_ranking": 0.7441039020696858,
+  "target_accuracy_ranking": 0.7471910112359551,
+  "positive_affinity_macro_f1": 0.5581328625027587,
+  "affinity_accuracy": 0.5716292134831461,
+  "positive_log_kd_mae": 0.7178292341180282,
+  "ranking_mrr": 0.8466760299625468,
+  "ranking_mean_rank": 1.4676966292134832,
+  "combined_score_vh_only": 0.6389013576640681,
+  "combined_score_ranking": 0.6429575565262163,
+  "per_class_f1_vh_only": {
+    "T01": 0.7337662337662337,
+    "T02": 0.7262247838616714,
+    "T03": 0.7582938388625593,
+    "T04": 0.6170212765957447,
+    "T05": 0.8176100628930818
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.7284345047923323,
+    "T02": 0.7514792899408285,
+    "T03": 0.7775175644028103,
+    "T04": 0.6203208556149732,
+    "T05": 0.8427672955974843
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.5,
+    "strong": 0.6700507614213198,
+    "weak": 0.5043478260869565
+  },
+  "n_samples": 712,
+  "generation_seconds": 302.0936036705971,
+  "final_train_loss": 0.5162150468161364,
+  "final_train_epoch": 50
+}
+=== cdr_h2_h3 ===
+{
+  "filter": {
+    "generated": 3267,
+    "quality": 3267,
+    "novel": 3141,
+    "esm_pass": 3267
+  },
+  "teacher_accepted": 1731,
+  "target_macro_f1_vh_only": 0.7865926307686776,
+  "target_accuracy_vh_only": 0.7865168539325843,
+  "target_macro_f1_ranking": 0.7959418491064285,
+  "target_accuracy_ranking": 0.7935393258426966,
+  "positive_affinity_macro_f1": 0.5900729485709721,
+  "affinity_accuracy": 0.6025280898876404,
+  "positive_log_kd_mae": 0.6864566870558972,
+  "ranking_mrr": 0.8731507490636703,
+  "ranking_mean_rank": 1.3848314606741574,
+  "combined_score_vh_only": 0.6723734009956615,
+  "combined_score_ranking": 0.6751781664969868,
+  "per_class_f1_vh_only": {
+    "T01": 0.79375,
+    "T02": 0.8046647230320699,
+    "T03": 0.7813267813267813,
+    "T04": 0.6907216494845362,
+    "T05": 0.8625
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.8049535603715169,
+    "T02": 0.8081395348837209,
+    "T03": 0.7786259541984732,
+    "T04": 0.7254901960784315,
+    "T05": 0.8625
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.5383022774327121,
+    "strong": 0.684297520661157,
+    "weak": 0.5476190476190476
+  },
+  "n_samples": 712,
+  "generation_seconds": 292.75602625496686,
+  "final_train_loss": 0.4842134032392577,
+  "final_train_epoch": 50
+}
+metrics -> /root/autodl-tmp/seq2kd/results/cdr_vae_metrics.json
