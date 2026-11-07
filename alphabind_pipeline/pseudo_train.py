@@ -187,13 +187,28 @@ def evaluate(model, tokenizer, dataset, config, device):
     target_true = np.array([s["target_id"] for s in dataset])
     affinity_true = np.array([s["affinity_class"] for s in dataset])
     z_true = np.array([s["log_kd_nm"] for s in dataset], dtype=float)
-    target_f1 = macro_f1(target_true, prediction["target_id"], TARGET_IDS)
-    affinity_f1 = macro_f1(affinity_true, prediction["affinity_class"], AFFINITY_CLASSES)
-    log_kd_mae = mae(z_true, prediction["log_kd_nm"])
+    target_pred = np.asarray(prediction["target_id"])
+    affinity_pred = np.asarray(prediction["affinity_class"])
+    z_pred = np.asarray(prediction["log_kd_nm"], dtype=float)
+    target_f1 = macro_f1(target_true, target_pred, TARGET_IDS)
+    affinity_f1 = macro_f1(affinity_true, affinity_pred, AFFINITY_CLASSES)
+    log_kd_mae = mae(z_true, z_pred)
     score = (0.30 * target_f1 + 0.35 * affinity_f1
              + 0.35 * max(0.0, 1.0 - log_kd_mae / 2.0))
+    per_target = {}
+    for target in TARGET_IDS:
+        mask = target_true == target
+        if not mask.any():
+            continue
+        per_target[target] = {
+            "n": int(mask.sum()),
+            "target_macro_f1": macro_f1(target_true[mask], target_pred[mask], TARGET_IDS),
+            "affinity_macro_f1": macro_f1(affinity_true[mask], affinity_pred[mask], AFFINITY_CLASSES),
+            "log_kd_mae": mae(z_true[mask], z_pred[mask]),
+        }
     return {"target_macro_f1": target_f1, "affinity_macro_f1": affinity_f1,
-            "log_kd_mae": log_kd_mae, "combined_score": score}
+            "log_kd_mae": log_kd_mae, "combined_score": score,
+            "per_target": per_target}
 
 
 def main() -> dict:
