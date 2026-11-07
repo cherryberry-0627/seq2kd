@@ -1,0 +1,80 @@
+train=3333 with_teacher=1821 val=712
+=== mode=none weight=0.0 seed=2026 ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:392: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{'target_macro_f1': 0.6727503319605305, 'affinity_macro_f1': 0.5378279054916987, 'log_kd_mae': 0.7726985856712536, 'combined_score': 0.6048426140177843}
+=== mode=none weight=0.0 seed=2027 ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:392: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{'target_macro_f1': 0.6169476330082594, 'affinity_macro_f1': 0.5365121566696954, 'log_kd_mae': 0.7813273903268915, 'combined_score': 0.5861312514296653}
+=== mode=none weight=0.0 seed=2028 ===
+{'target_macro_f1': 0.6512451973398315, 'affinity_macro_f1': 0.5315650112938047, 'log_kd_mae': 0.778262650548797, 'combined_score': 0.5952253493087416}
+=== mode=rank weight=0.2 seed=2026 ===
+{'target_macro_f1': 0.6651663623851592, 'affinity_macro_f1': 0.537611285965838, 'log_kd_mae': 0.7485573009954144, 'combined_score': 0.6067163311293935}
+=== mode=rank weight=0.2 seed=2027 ===
+{'target_macro_f1': 0.6446874163761309, 'affinity_macro_f1': 0.4984677972412241, 'log_kd_mae': 0.8150128424942248, 'combined_score': 0.5752427065107784}
+=== mode=rank weight=0.2 seed=2028 ===
+{'target_macro_f1': 0.6628001810630363, 'affinity_macro_f1': 0.541370668049434, 'log_kd_mae': 0.7552561575205461, 'combined_score': 0.6061499605701173}
+=== mode=mse weight=0.1 seed=2026 ===
+{'target_macro_f1': 0.6672309710648316, 'affinity_macro_f1': 0.560609970808561, 'log_kd_mae': 0.7460392677639516, 'combined_score': 0.6158259092437544}
+=== mode=mse weight=0.1 seed=2027 ===
+{'target_macro_f1': 0.6434832467992359, 'affinity_macro_f1': 0.5051001375410752, 'log_kd_mae': 0.7800315463248286, 'combined_score': 0.5833245015723021}
+=== mode=mse weight=0.1 seed=2028 ===
+{'target_macro_f1': 0.6138504201094217, 'affinity_macro_f1': 0.5255049856879507, 'log_kd_mae': 0.7613968543846991, 'combined_score': 0.5848374215062869}
+{
+  "none": {
+    "target_macro_f1": {
+      "mean": 0.6469810541028739,
+      "std": 0.02298002742598332
+    },
+    "affinity_macro_f1": {
+      "mean": 0.5353016911517329,
+      "std": 0.0026962790423267313
+    },
+    "log_kd_mae": {
+      "mean": 0.777429542182314,
+      "std": 0.0035716121111730803
+    },
+    "combined_score": {
+      "mean": 0.5953997382520637,
+      "std": 0.0076398770105144
+    }
+  },
+  "rank": {
+    "target_macro_f1": {
+      "mean": 0.6575513199414421,
+      "std": 0.009147302506404505
+    },
+    "affinity_macro_f1": {
+      "mean": 0.5258165837521654,
+      "std": 0.01939931839229406
+    },
+    "log_kd_mae": {
+      "mean": 0.7729421003367284,
+      "std": 0.029873948282162516
+    },
+    "combined_score": {
+      "mean": 0.596036332736763,
+      "std": 0.014705132043430106
+    }
+  },
+  "mse": {
+    "target_macro_f1": {
+      "mean": 0.6415215459911631,
+      "std": 0.02183662073400361
+    },
+    "affinity_macro_f1": {
+      "mean": 0.5304050313458623,
+      "std": 0.022925142426794685
+    },
+    "log_kd_mae": {
+      "mean": 0.762489222824493,
+      "std": 0.01389876977880318
+    },
+    "combined_score": {
+      "mean": 0.5946626107741144,
+      "std": 0.014977452682125423
+    }
+  }
+}
+out: /root/autodl-tmp/alphabind_pilot/pipeline_results/distill_metrics.json

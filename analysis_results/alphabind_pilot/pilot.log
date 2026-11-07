@@ -1,0 +1,31 @@
+device: cuda
+loading ESM2-3B...
+checkpoint type: <class 'alphabind.models.model.TxRegressorForESMEmbedding'>
+=== zero-shot parent scores vs true log-Kd ===
+T02 b7467cd7870099bd true=-1.74472749 AlphaBind=3.8402
+T02 078e94d890234aad true=-0.72584215 AlphaBind=4.4319
+T01 0cd239e2cc107489 true=-0.07963338 AlphaBind=4.1538
+T02 0489eaacd1662b74 true=0.39967372 AlphaBind=4.1654
+T02 929f470ea65f6a54 true=0.89320675 AlphaBind=4.0587
+T01 a1f7ba20e39c7b25 true=2.47129171 AlphaBind=4.8540
+Spearman(AlphaBind, true log-Kd) = 0.4857, p=0.3287
+=== CDR-H3 single mutants ===
+parent b7467cd7870099bd AlphaBind=3.8402
+  mutant 99R>M score=3.8972 delta=+0.0570
+  mutant 106G>V score=3.8308 delta=-0.0093
+  mutant 108T>E score=3.9241 delta=+0.0839
+  mutant 101Y>V score=3.8583 delta=+0.0182
+  mutant 104Y>W score=3.8258 delta=-0.0144
+parent 078e94d890234aad AlphaBind=4.4319
+  mutant 103R>T score=4.4144 delta=-0.0175
+  mutant 104D>S score=4.4273 delta=-0.0046
+  mutant 98S>A score=4.4250 delta=-0.0070
+  mutant 104D>E score=4.4384 delta=+0.0065
+  mutant 96H>M score=4.4230 delta=-0.0089
+parent 0cd239e2cc107489 AlphaBind=4.1538
+  mutant 97R>S score=4.3318 delta=+0.1779
+  mutant 96A>T score=4.1052 delta=-0.0487
+  mutant 101W>H score=4.1753 delta=+0.0215
+  mutant 102F>L score=4.2269 delta=+0.0731
+  mutant 101W>N score=4.2060 delta=+0.0522
+wrote /root/autodl-tmp/alphabind_pilot/pilot_scores.csv

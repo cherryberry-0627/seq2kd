@@ -1,0 +1,85 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:392: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd-knn-fusion/minimal_model/stage3.py:400: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+{
+  "baseline": {
+    "target_f1": 0.7396890456214529,
+    "affinity_f1": 0.5985675094443347,
+    "log_kd_mae": 0.7227283011148584,
+    "combined": 0.6549278892968527,
+    "seconds": 109.104232147336
+  },
+  "adaptive_gate": {
+    "target_f1": 0.8552826294611021,
+    "affinity_f1": 0.6484245884713115,
+    "log_kd_mae": 0.6084793085987287,
+    "combined": 0.7270495157985121,
+    "target_acc": 0.8525280898876404,
+    "affinity_acc": 0.6558988764044944
+  },
+  "multi_view_knn": {
+    "target_f1": 0.8199759999515832,
+    "affinity_f1": 0.6526490149772158,
+    "log_kd_mae": 0.6368954778227769,
+    "combined": 0.7129632466085145,
+    "target_acc": 0.8188202247191011,
+    "affinity_acc": 0.6587078651685393
+  },
+  "learned_metric_w0.25": {
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.6455932452472245,
+    "log_kd_mae": 0.6313670153045414,
+    "combined": 0.7651324757098675,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6530898876404494
+  },
+  "learned_metric_w0.5": {
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.647258179397701,
+    "log_kd_mae": 0.6310042859842754,
+    "combined": 0.7657786802935808,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6544943820224719
+  },
+  "learned_metric_w0.75": {
+    "target_f1": 0.9773068528803176,
+    "affinity_f1": 0.635737925956545,
+    "log_kd_mae": 0.624612202956776,
+    "combined": 0.7563931944314503,
+    "target_acc": 0.9747191011235955,
+    "affinity_acc": 0.6432584269662921
+  },
+  "confidence_distill_proxy_0.1": {
+    "target_f1": 0.7588496475081652,
+    "affinity_f1": 0.6006753101965229,
+    "log_kd_mae": 0.6992980633903264,
+    "combined": 0.6655140917279254,
+    "target_acc": 0.7570224719101124,
+    "affinity_acc": 0.6109550561797753
+  },
+  "confidence_distill_proxy_0.2": {
+    "target_f1": 0.7762689391611841,
+    "affinity_f1": 0.6089644163002482,
+    "log_kd_mae": 0.6774890902567189,
+    "combined": 0.6774576366585163,
+    "target_acc": 0.773876404494382,
+    "affinity_acc": 0.6193820224719101
+  },
+  "confidence_distill_proxy_0.3": {
+    "target_f1": 0.7873174179175277,
+    "affinity_f1": 0.6187444619659082,
+    "log_kd_mae": 0.6568302804329452,
+    "combined": 0.6878104879875607,
+    "target_acc": 0.7837078651685393,
+    "affinity_acc": 0.6292134831460674
+  },
+  "task_specific_gate": {
+    "target_f1": 0.8469995500923335,
+    "affinity_f1": 0.650657731541256,
+    "log_kd_mae": 0.6142954218947874,
+    "combined": 0.7243283722355518,
+    "target_acc": 0.8426966292134831,
+    "affinity_acc": 0.6601123595505618
+  }
+}

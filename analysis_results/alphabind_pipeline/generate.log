@@ -1,0 +1,10 @@
+parents: ['81bd19753ce85269', 'bc88a3a987e8cdbc']
+parent 81bd19753ce85269 true=0.260 score=0.1226
+  round 1 h3: best 98R>F score=-0.0207 delta=+0.1433
+  round 2 h3: best 107P>L score=-0.1110 delta=+0.0902
+parent 81bd19753ce85269 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 98, 'from': 'R', 'to': 'F', 'score': -0.020743846893310547, 'delta': 0.1433088779449463}, {'round': 2, 'region': 'h3', 'position': 107, 'from': 'P', 'to': 'L', 'score': -0.11095315217971802, 'delta': 0.09020930528640747}]
+parent bc88a3a987e8cdbc true=0.465 score=-0.0910
+  round 1 h3: best 96A>R score=-0.2723 delta=+0.1813
+  round 2 h3: best 97K>V score=-0.5662 delta=+0.2939
+parent bc88a3a987e8cdbc accepted mutations: [{'round': 1, 'region': 'h3', 'position': 96, 'from': 'A', 'to': 'R', 'score': -0.27231985330581665, 'delta': 0.18134725093841553}, {'round': 2, 'region': 'h3', 'position': 97, 'from': 'K', 'to': 'V', 'score': -0.5661724209785461, 'delta': 0.2938525676727295}]
+wrote /root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates.csv (936 candidates)

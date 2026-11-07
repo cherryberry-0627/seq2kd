@@ -1,0 +1,42 @@
+parents: ['81bd19753ce85269', 'bc88a3a987e8cdbc', '2ec48d4e2c2735fe', 'dd412af45da90dff', 'b66fada290095298', 'edeba85b081240c8', 'fcf42947a6bfa917', '7e1010d3ee36099a', '37608096b9bf39a1', '728d85347cb29247']
+parent 81bd19753ce85269 true=0.260 score=0.1226
+  round 1 h3: best 98R>F score=-0.0207 delta=+0.1433
+  round 2 h3: best 107P>L score=-0.1110 delta=+0.0902
+parent 81bd19753ce85269 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 98, 'from': 'R', 'to': 'F', 'score': -0.020743846893310547, 'delta': 0.1433088779449463}, {'round': 2, 'region': 'h3', 'position': 107, 'from': 'P', 'to': 'L', 'score': -0.11095315217971802, 'delta': 0.09020930528640747}]
+parent bc88a3a987e8cdbc true=0.465 score=-0.0910
+  round 1 h3: best 96A>R score=-0.2723 delta=+0.1813
+  round 2 h3: best 97K>V score=-0.5662 delta=+0.2939
+parent bc88a3a987e8cdbc accepted mutations: [{'round': 1, 'region': 'h3', 'position': 96, 'from': 'A', 'to': 'R', 'score': -0.27231985330581665, 'delta': 0.18134725093841553}, {'round': 2, 'region': 'h3', 'position': 97, 'from': 'K', 'to': 'V', 'score': -0.5661724209785461, 'delta': 0.2938525676727295}]
+parent 2ec48d4e2c2735fe true=0.255 score=-0.0482
+  round 1 h3: best 99N>A score=-0.1813 delta=+0.1331
+  round 2 h3: best 101Y>G score=-0.3210 delta=+0.1396
+parent 2ec48d4e2c2735fe accepted mutations: [{'round': 1, 'region': 'h3', 'position': 99, 'from': 'N', 'to': 'A', 'score': -0.18134307861328125, 'delta': 0.1331022083759308}, {'round': 2, 'region': 'h3', 'position': 101, 'from': 'Y', 'to': 'G', 'score': -0.320983350276947, 'delta': 0.13964027166366577}]
+parent dd412af45da90dff true=2.170 score=2.3396
+  round 1 h3: best 106Y>P score=1.9428 delta=+0.3968
+  round 2 h3: best 97R>T score=1.4031 delta=+0.5397
+parent dd412af45da90dff accepted mutations: [{'round': 1, 'region': 'h3', 'position': 106, 'from': 'Y', 'to': 'P', 'score': 1.9427845478057861, 'delta': 0.39676785469055176}, {'round': 2, 'region': 'h3', 'position': 97, 'from': 'R', 'to': 'T', 'score': 1.4030808210372925, 'delta': 0.5397037267684937}]
+parent b66fada290095298 true=0.068 score=0.0309
+  round 1 h3: best 96A>Q score=-0.2061 delta=+0.2370
+  round 2 h3: best 108G>H score=-0.4009 delta=+0.1947
+parent b66fada290095298 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 96, 'from': 'A', 'to': 'Q', 'score': -0.2061372995376587, 'delta': 0.2370263934135437}, {'round': 2, 'region': 'h3', 'position': 108, 'from': 'G', 'to': 'H', 'score': -0.4008724093437195, 'delta': 0.1947351098060608}]
+parent edeba85b081240c8 true=0.790 score=0.6860
+  round 1 h3: best 96A>E score=0.4981 delta=+0.1879
+  round 2 h3: best 99P>R score=0.4178 delta=+0.0802
+parent edeba85b081240c8 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 96, 'from': 'A', 'to': 'E', 'score': 0.4980505704879761, 'delta': 0.18794912099838257}, {'round': 2, 'region': 'h3', 'position': 99, 'from': 'P', 'to': 'R', 'score': 0.4178338646888733, 'delta': 0.08021670579910278}]
+parent fcf42947a6bfa917 true=0.719 score=0.6381
+  round 1 h3: best 97R>F score=0.4393 delta=+0.1988
+  round 2 h3: best 108Y>K score=0.3429 delta=+0.0964
+parent fcf42947a6bfa917 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 97, 'from': 'R', 'to': 'F', 'score': 0.43928948044776917, 'delta': 0.1988219916820526}, {'round': 2, 'region': 'h3', 'position': 108, 'from': 'Y', 'to': 'K', 'score': 0.34292730689048767, 'delta': 0.0963621735572815}]
+parent 7e1010d3ee36099a true=0.124 score=0.1662
+  round 1 h3: best 102T>P score=-0.0929 delta=+0.2591
+  round 2 h3: best 98I>G score=-0.2693 delta=+0.1764
+parent 7e1010d3ee36099a accepted mutations: [{'round': 1, 'region': 'h3', 'position': 102, 'from': 'T', 'to': 'P', 'score': -0.0928947925567627, 'delta': 0.2590848505496979}, {'round': 2, 'region': 'h3', 'position': 98, 'from': 'I', 'to': 'G', 'score': -0.2693357467651367, 'delta': 0.17644095420837402}]
+parent 37608096b9bf39a1 true=0.760 score=1.1931
+  round 1 h3: best 97K>G score=0.4612 delta=+0.7319
+  round 2 h3: best 102W>K score=0.1976 delta=+0.2636
+parent 37608096b9bf39a1 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 97, 'from': 'K', 'to': 'G', 'score': 0.4611855149269104, 'delta': 0.7318890690803528}, {'round': 2, 'region': 'h3', 'position': 102, 'from': 'W', 'to': 'K', 'score': 0.19758349657058716, 'delta': 0.26360201835632324}]
+parent 728d85347cb29247 true=0.737 score=-0.6871
+  round 1 h3: best 100D>L score=-0.8349 delta=+0.1478
+  round 2 h3: best 108D>Q score=-0.8756 delta=+0.0407
+parent 728d85347cb29247 accepted mutations: [{'round': 1, 'region': 'h3', 'position': 100, 'from': 'D', 'to': 'L', 'score': -0.8348918557167053, 'delta': 0.14780330657958984}, {'round': 2, 'region': 'h3', 'position': 108, 'from': 'D', 'to': 'Q', 'score': -0.8755561709403992, 'delta': 0.04066431522369385}]
+wrote /root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates_10p.csv (4680 candidates)

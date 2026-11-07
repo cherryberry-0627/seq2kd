@@ -1,0 +1,55 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+checkpoint -> results/ym_pretrain.pt
+{
+  "val_affinity_macro_f1": 0.49000609588098776,
+  "val_log_kd_mae": 0.39100413910070625,
+  "test_affinity_macro_f1": 0.4849876043067595,
+  "test_log_kd_mae": 0.4083063338128394,
+  "val_constant_macro_f1": 0.32522223587726845,
+  "test_constant_macro_f1": 0.3253277355888951,
+  "val_f1_from_regression": 0.32522223587726845,
+  "test_f1_from_regression": 0.3253277355888951,
+  "final_train_loss": 0.4031616088674073,
+  "device": "cuda"
+}
+splits: {'train': {'n_rows': 38954, 'n_unique_vh': 31, 'n_unique_antigen': 1688, 'affinity_distribution': {'strong': 4, 'medium': 1829, 'weak': 37121}, 'target_distribution': {'CoV2_RBD': 38923, 'CoV1_RBD': 31}}, 'val': {'n_rows': 8335, 'n_unique_vh': 31, 'n_unique_antigen': 362, 'affinity_distribution': {'weak': 7939, 'medium': 395, 'strong': 1}, 'target_distribution': {'MERS_RBD': 30, 'CoV2_RBD': 8305}}, 'test': {'n_rows': 8293, 'n_unique_vh': 31, 'n_unique_antigen': 364, 'affinity_distribution': {'medium': 388, 'strong': 1, 'weak': 7904}, 'target_distribution': {'CoV2_RBD': 8293}}}
+per_class_f1 val: {'medium': 0.5123966942148761, 'strong': 0.0, 'weak': 0.9576215934280872}
+per_class_f1 test: {'medium': 0.49925705794947994, 'strong': 0.0, 'weak': 0.9557057549707986}
+per_class_f1_from_regression val: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9756667076318053}
+per_class_f1_from_regression test: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9759832067666853}
+out: results/ym_pretrain_metrics.json
+=== mode=A seed=2026 ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{'target_macro_f1': 0.6422, 'affinity_macro_f1': 0.552, 'log_kd_mae': 0.7553, 'combined_score': 0.6037}
+=== mode=B0 seed=2026 ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{'target_macro_f1': 0.5177, 'affinity_macro_f1': 0.5405, 'log_kd_mae': 0.7667, 'combined_score': 0.5603}
+=== mode=B seed=2026 ===
+{'target_macro_f1': 0.4116, 'affinity_macro_f1': 0.4872, 'log_kd_mae': 0.8216, 'combined_score': 0.5002}
+=== mode=C seed=2026 ===
+{'target_macro_f1': 0.2566, 'affinity_macro_f1': 0.3765, 'log_kd_mae': 0.883, 'combined_score': 0.4043}
+=== mode=A seed=2027 ===
+{'target_macro_f1': 0.657, 'affinity_macro_f1': 0.4963, 'log_kd_mae': 0.8093, 'combined_score': 0.5792}
+=== mode=B0 seed=2027 ===
+{'target_macro_f1': 0.4978, 'affinity_macro_f1': 0.5168, 'log_kd_mae': 0.8056, 'combined_score': 0.5392}
+=== mode=B seed=2027 ===
+{'target_macro_f1': 0.4064, 'affinity_macro_f1': 0.475, 'log_kd_mae': 0.8392, 'combined_score': 0.4913}
+=== mode=C seed=2027 ===
+{'target_macro_f1': 0.2674, 'affinity_macro_f1': 0.3056, 'log_kd_mae': 0.9073, 'combined_score': 0.3784}
+=== mode=A seed=2028 ===
+{'target_macro_f1': 0.6729, 'affinity_macro_f1': 0.5376, 'log_kd_mae': 0.7621, 'combined_score': 0.6067}
+=== mode=B0 seed=2028 ===
+{'target_macro_f1': 0.484, 'affinity_macro_f1': 0.5231, 'log_kd_mae': 0.7961, 'combined_score': 0.539}
+=== mode=B seed=2028 ===
+{'target_macro_f1': 0.4127, 'affinity_macro_f1': 0.4575, 'log_kd_mae': 0.8305, 'combined_score': 0.4886}
+=== mode=C seed=2028 ===
+{'target_macro_f1': 0.2488, 'affinity_macro_f1': 0.3546, 'log_kd_mae': 0.8916, 'combined_score': 0.3927}
+=== summary (mean ± std over seeds) ===
+A {'target_macro_f1': '0.6573 ± 0.0125', 'affinity_macro_f1': '0.5286 ± 0.0236', 'log_kd_mae': '0.7756 ± 0.0240', 'combined_score': '0.5965 ± 0.0123'}
+B0 {'target_macro_f1': '0.4998 ± 0.0138', 'affinity_macro_f1': '0.5268 ± 0.0100', 'log_kd_mae': '0.7894 ± 0.0166', 'combined_score': '0.5462 ± 0.0100'}
+B {'target_macro_f1': '0.4102 ± 0.0027', 'affinity_macro_f1': '0.4732 ± 0.0122', 'log_kd_mae': '0.8304 ± 0.0072', 'combined_score': '0.4934 ± 0.0050'}
+C {'target_macro_f1': '0.2576 ± 0.0076', 'affinity_macro_f1': '0.3456 ± 0.0297', 'log_kd_mae': '0.8940 ± 0.0101', 'combined_score': '0.3918 ± 0.0106'}
+out: results/pretrain_finetune_metrics.json

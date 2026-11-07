@@ -1,0 +1,13 @@
+selected 100 val pairs from 384 compatible pairs
+embedding 103 unique sequences
+{
+  "n": 100,
+  "spearman": 0.13194917416987553,
+  "spearman_p": 0.19065891157894355,
+  "mse": 16.359350689152965,
+  "mae": 3.8530719105834224,
+  "pred_min": 2.700486898422241,
+  "pred_max": 5.161545276641846,
+  "checkpoint": "/root/autodl-tmp/alphabind_pilot/alphabind/models/alphabind_pretrained_checkpoint.pt",
+  "out": "/root/autodl-tmp/alphabind_pilot/pipeline_results/zero_shot_n100.csv"
+}

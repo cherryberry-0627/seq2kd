@@ -1,0 +1,56 @@
+real train=3333 val=712 pseudo=806
+=== real seed=2026 n=3333 ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:392: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{'target_macro_f1': 0.6630009383517621, 'affinity_macro_f1': 0.5395795606978023, 'log_kd_mae': 0.7696208902489652, 'combined_score': 0.6030694719561905, 'per_target': {'T01': {'n': 153, 'target_macro_f1': 0.1707865168539326, 'affinity_macro_f1': 0.5298935319829243, 'log_kd_mae': 0.7536985657762064}, 'T02': {'n': 167, 'target_macro_f1': 0.15884476534296027, 'affinity_macro_f1': 0.6385050531487749, 'log_kd_mae': 0.5487644507779346}, 'T03': {'n': 215, 'target_macro_f1': 0.16943699731903486, 'affinity_macro_f1': 0.419691652148612, 'log_kd_mae': 0.8762449347051182}, 'T04': {'n': 101, 'target_macro_f1': 0.11347517730496455, 'affinity_macro_f1': 0.4408526256352343, 'log_kd_mae': 0.973538344812253}, 'T05': {'n': 76, 'target_macro_f1': 0.1797101449275362, 'affinity_macro_f1': 0.6456161822199559, 'log_kd_mae': 0.7143486345519809}}}
+=== real+pseudo seed=2026 n=4139 ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:392: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{'target_macro_f1': 0.6455507345176292, 'affinity_macro_f1': 0.505584410090271, 'log_kd_mae': 0.7771279564468432, 'combined_score': 0.584622371508686, 'per_target': {'T01': {'n': 153, 'target_macro_f1': 0.1707865168539326, 'affinity_macro_f1': 0.43707431935246505, 'log_kd_mae': 0.7206178715925693}, 'T02': {'n': 167, 'target_macro_f1': 0.16478873239436617, 'affinity_macro_f1': 0.5031266640761048, 'log_kd_mae': 0.6156769061735269}, 'T03': {'n': 215, 'target_macro_f1': 0.15977653631284916, 'affinity_macro_f1': 0.40847699840505597, 'log_kd_mae': 0.8430452064048313}, 'T04': {'n': 101, 'target_macro_f1': 0.11347517730496455, 'affinity_macro_f1': 0.4214891630411029, 'log_kd_mae': 0.9807770663769123}, 'T05': {'n': 76, 'target_macro_f1': 0.17142857142857143, 'affinity_macro_f1': 0.5090909090909091, 'log_kd_mae': 0.7885437397947809}}}
+=== real seed=2027 n=3333 ===
+{'target_macro_f1': 0.6384342294535037, 'affinity_macro_f1': 0.5287737621070955, 'log_kd_mae': 0.7695054067332314, 'combined_score': 0.5919376393952189, 'per_target': {'T01': {'n': 153, 'target_macro_f1': 0.17985611510791366, 'affinity_macro_f1': 0.45291358092166983, 'log_kd_mae': 0.7712366277872031}, 'T02': {'n': 167, 'target_macro_f1': 0.16057347670250893, 'affinity_macro_f1': 0.5451195738410972, 'log_kd_mae': 0.5805765580404421}, 'T03': {'n': 215, 'target_macro_f1': 0.16438356164383564, 'affinity_macro_f1': 0.42648401826484017, 'log_kd_mae': 0.8688703650215646}, 'T04': {'n': 101, 'target_macro_f1': 0.1154929577464789, 'affinity_macro_f1': 0.42072072072072064, 'log_kd_mae': 0.96464479574609}, 'T05': {'n': 76, 'target_macro_f1': 0.1423728813559322, 'affinity_macro_f1': 0.6401709401709402, 'log_kd_mae': 0.6407382565772811}}}
+=== real+pseudo seed=2027 n=4139 ===
+{'target_macro_f1': 0.642843673591909, 'affinity_macro_f1': 0.5111874542149865, 'log_kd_mae': 0.8048058136009684, 'combined_score': 0.5809276936726484, 'per_target': {'T01': {'n': 153, 'target_macro_f1': 0.17906137184115523, 'affinity_macro_f1': 0.4812768233820865, 'log_kd_mae': 0.7741755303111941}, 'T02': {'n': 167, 'target_macro_f1': 0.15531135531135531, 'affinity_macro_f1': 0.5236243719443655, 'log_kd_mae': 0.623137313438532}, 'T03': {'n': 215, 'target_macro_f1': 0.16373626373626374, 'affinity_macro_f1': 0.37259484962520234, 'log_kd_mae': 0.8938559298289838}, 'T04': {'n': 101, 'target_macro_f1': 0.12702702702702703, 'affinity_macro_f1': 0.4112447100423196, 'log_kd_mae': 0.9654791745687579}, 'T05': {'n': 76, 'target_macro_f1': 0.1445378151260504, 'affinity_macro_f1': 0.6256684491978609, 'log_kd_mae': 0.8002175033863935}}}
+=== real seed=2028 n=3333 ===
+{'target_macro_f1': 0.634142598956503, 'affinity_macro_f1': 0.5253723678548239, 'log_kd_mae': 0.7621062151886508, 'combined_score': 0.5907545207781254, 'per_target': {'T01': {'n': 153, 'target_macro_f1': 0.14393305439330545, 'affinity_macro_f1': 0.5187134502923977, 'log_kd_mae': 0.6857999316735921}, 'T02': {'n': 167, 'target_macro_f1': 0.1872611464968153, 'affinity_macro_f1': 0.5408635289628554, 'log_kd_mae': 0.5878904354063627}, 'T03': {'n': 215, 'target_macro_f1': 0.1378048780487805, 'affinity_macro_f1': 0.4295519901099197, 'log_kd_mae': 0.8319523010997982}, 'T04': {'n': 101, 'target_macro_f1': 0.1426751592356688, 'affinity_macro_f1': 0.31033697632058294, 'log_kd_mae': 1.0233028833252231}, 'T05': {'n': 76, 'target_macro_f1': 0.16434108527131783, 'affinity_macro_f1': 0.6349744749374722, 'log_kd_mae': 0.753831539514382}}}
+=== real+pseudo seed=2028 n=4139 ===
+{'target_macro_f1': 0.679448629758856, 'affinity_macro_f1': 0.5215668320643695, 'log_kd_mae': 0.7930189793728897, 'combined_score': 0.5976046587599304, 'per_target': {'T01': {'n': 153, 'target_macro_f1': 0.1690566037735849, 'affinity_macro_f1': 0.49074454956807895, 'log_kd_mae': 0.7430915919724963}, 'T02': {'n': 167, 'target_macro_f1': 0.1727891156462585, 'affinity_macro_f1': 0.622017723244717, 'log_kd_mae': 0.6127883067253063}, 'T03': {'n': 215, 'target_macro_f1': 0.16373626373626374, 'affinity_macro_f1': 0.3528556503988715, 'log_kd_mae': 0.8719141094454211}, 'T04': {'n': 101, 'target_macro_f1': 0.1251700680272109, 'affinity_macro_f1': 0.44617064521709043, 'log_kd_mae': 0.9718452561667481}, 'T05': {'n': 76, 'target_macro_f1': 0.16969696969696968, 'affinity_macro_f1': 0.6394236181470224, 'log_kd_mae': 0.828723001512792}}}
+{
+  "real": {
+    "target_macro_f1": {
+      "mean": 0.6451925889205896,
+      "std": 0.012713706650114608
+    },
+    "affinity_macro_f1": {
+      "mean": 0.5312418968865739,
+      "std": 0.006056943623459371
+    },
+    "log_kd_mae": {
+      "mean": 0.7670775040569492,
+      "std": 0.0035155482142098906
+    },
+    "combined_score": {
+      "mean": 0.5952538773765116,
+      "std": 0.005547526859839326
+    }
+  },
+  "real+pseudo": {
+    "target_macro_f1": {
+      "mean": 0.6559476792894647,
+      "std": 0.016654389800439536
+    },
+    "affinity_macro_f1": {
+      "mean": 0.5127795654565422,
+      "std": 0.006621206672183603
+    },
+    "log_kd_mae": {
+      "mean": 0.791650916473567,
+      "std": 0.011340771321017422
+    },
+    "combined_score": {
+      "mean": 0.5877182413137549,
+      "std": 0.007151624455001295
+    }
+  }
+}
+out: /root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_metrics.json

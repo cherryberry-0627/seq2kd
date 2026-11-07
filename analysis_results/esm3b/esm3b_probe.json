@@ -1,0 +1,18 @@
+{
+  "stage3_baseline": {
+    "target_macro_f1": 0.7292149133726925,
+    "affinity_macro_f1": 0.5639534739129096,
+    "log_kd_mae": 0.7230586426262117,
+    "combined_score": 0.639612927421739,
+    "seconds": 179.72524824738503
+  },
+  "stage3_esm3b": {
+    "target_macro_f1": 0.7347337016200405,
+    "affinity_macro_f1": 0.5734709648352571,
+    "log_kd_mae": 0.707236104452757,
+    "combined_score": 0.6473686298991196,
+    "seconds": 177.97590412572026,
+    "embedding_seconds": 52.56485743820667,
+    "device": "cuda"
+  }
+}

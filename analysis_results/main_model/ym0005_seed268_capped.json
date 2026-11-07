@@ -1,0 +1,289 @@
+{
+  "config": {
+    "epochs": 10,
+    "batch_size": 64,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "device_used": "cuda"
+  },
+  "csv": "/root/autodl-tmp/seq2kd_external/YM_0005/YM_0005_aligned_challenge_final.csv",
+  "split_protocol": "grouped by antigen_sequence, stratified by strongest affinity class, 70/15/15",
+  "split_seed": 268,
+  "class_weight_mode": "capped",
+  "class_weights": {
+    "medium": 20.295790049207216,
+    "strong": 100.0,
+    "weak": 1.0
+  },
+  "n_total": 55582,
+  "n_unique_vh": 31,
+  "n_unique_antigen": 2414,
+  "splits": {
+    "train": {
+      "n_rows": 38954,
+      "n_unique_vh": 31,
+      "n_unique_antigen": 1688,
+      "affinity_distribution": {
+        "strong": 4,
+        "medium": 1829,
+        "weak": 37121
+      },
+      "target_distribution": {
+        "CoV2_RBD": 38923,
+        "CoV1_RBD": 31
+      }
+    },
+    "val": {
+      "n_rows": 8335,
+      "n_unique_vh": 31,
+      "n_unique_antigen": 362,
+      "affinity_distribution": {
+        "weak": 7939,
+        "medium": 395,
+        "strong": 1
+      },
+      "target_distribution": {
+        "MERS_RBD": 30,
+        "CoV2_RBD": 8305
+      }
+    },
+    "test": {
+      "n_rows": 8293,
+      "n_unique_vh": 31,
+      "n_unique_antigen": 364,
+      "affinity_distribution": {
+        "medium": 388,
+        "strong": 1,
+        "weak": 7904
+      },
+      "target_distribution": {
+        "CoV2_RBD": 8293
+      }
+    }
+  },
+  "train_majority_class": "weak",
+  "train_mean_log_kd": 2.265215338158597,
+  "final_train_loss": 0.4043935979453728,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.5169066362583693,
+      "affinity_loss": 0.34294650036188074,
+      "regression_loss": 0.17396013564746005
+    },
+    {
+      "epoch": 2,
+      "loss": 0.44038567282540625,
+      "affinity_loss": 0.3035794803411275,
+      "regression_loss": 0.1368061921560661
+    },
+    {
+      "epoch": 3,
+      "loss": 0.428250324682037,
+      "affinity_loss": 0.2957137960441586,
+      "regression_loss": 0.13253652815206246
+    },
+    {
+      "epoch": 4,
+      "loss": 0.4213258607520848,
+      "affinity_loss": 0.29334689097378286,
+      "regression_loss": 0.1279789699060677
+    },
+    {
+      "epoch": 5,
+      "loss": 0.4183615315601298,
+      "affinity_loss": 0.29278419650132853,
+      "regression_loss": 0.12557733469577811
+    },
+    {
+      "epoch": 6,
+      "loss": 0.40853860288355004,
+      "affinity_loss": 0.2846896735012283,
+      "regression_loss": 0.12384893012902462
+    },
+    {
+      "epoch": 7,
+      "loss": 0.4112821563855697,
+      "affinity_loss": 0.28797282915147915,
+      "regression_loss": 0.12330932632634152
+    },
+    {
+      "epoch": 8,
+      "loss": 0.407366146186958,
+      "affinity_loss": 0.28530262796883527,
+      "regression_loss": 0.12206351960556716
+    },
+    {
+      "epoch": 9,
+      "loss": 0.4077764141576126,
+      "affinity_loss": 0.2866811132249863,
+      "regression_loss": 0.12109530174895014
+    },
+    {
+      "epoch": 10,
+      "loss": 0.4043935979453728,
+      "affinity_loss": 0.2840706555742487,
+      "regression_loss": 0.12032294229767788
+    }
+  ],
+  "val": {
+    "split": "val",
+    "n_samples": 8335,
+    "n_unique_vh": 31,
+    "n_unique_antigen": 362,
+    "affinity_macro_f1": 0.49000609588098776,
+    "log_kd_mae": 0.3939912844110583,
+    "per_class_f1": {
+      "medium": 0.5123966942148761,
+      "strong": 0.0,
+      "weak": 0.9576215934280872
+    },
+    "confusion": {
+      "medium": {
+        "medium": 341,
+        "strong": 0,
+        "weak": 54
+      },
+      "strong": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 1
+      },
+      "weak": {
+        "medium": 595,
+        "strong": 0,
+        "weak": 7344
+      }
+    },
+    "truth_distribution": {
+      "weak": 7939,
+      "medium": 395,
+      "strong": 1
+    },
+    "prediction_distribution": {
+      "weak": 7399,
+      "medium": 936
+    },
+    "affinity_macro_f1_from_regression": 0.32522223587726845,
+    "per_class_f1_from_regression": {
+      "medium": 0.0,
+      "strong": 0.0,
+      "weak": 0.9756667076318053
+    },
+    "confusion_from_regression": {
+      "medium": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 395
+      },
+      "strong": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 1
+      },
+      "weak": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 7939
+      }
+    },
+    "prediction_distribution_from_regression": {
+      "weak": 8335
+    },
+    "pred_log_kd_min": 1.2751401662826538,
+    "pred_log_kd_max": 3.234834671020508,
+    "pred_log_kd_mean": 2.3030879497528076,
+    "constant_baseline": {
+      "majority_class": "weak",
+      "majority_macro_f1": 0.32522223587726845,
+      "mean_log_kd": 2.265215338158597,
+      "mean_log_kd_mae": 0.6517253308683926
+    }
+  },
+  "test": {
+    "split": "test",
+    "n_samples": 8293,
+    "n_unique_vh": 31,
+    "n_unique_antigen": 364,
+    "affinity_macro_f1": 0.4849876043067595,
+    "log_kd_mae": 0.4126590117063768,
+    "per_class_f1": {
+      "medium": 0.49925705794947994,
+      "strong": 0.0,
+      "weak": 0.9557057549707986
+    },
+    "confusion": {
+      "medium": {
+        "medium": 336,
+        "strong": 0,
+        "weak": 52
+      },
+      "strong": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 1
+      },
+      "weak": {
+        "medium": 622,
+        "strong": 0,
+        "weak": 7282
+      }
+    },
+    "truth_distribution": {
+      "medium": 388,
+      "strong": 1,
+      "weak": 7904
+    },
+    "prediction_distribution": {
+      "weak": 7335,
+      "medium": 958
+    },
+    "affinity_macro_f1_from_regression": 0.3253277355888951,
+    "per_class_f1_from_regression": {
+      "medium": 0.0,
+      "strong": 0.0,
+      "weak": 0.9759832067666853
+    },
+    "confusion_from_regression": {
+      "medium": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 388
+      },
+      "strong": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 1
+      },
+      "weak": {
+        "medium": 0,
+        "strong": 0,
+        "weak": 7904
+      }
+    },
+    "prediction_distribution_from_regression": {
+      "weak": 8293
+    },
+    "pred_log_kd_min": 1.2751408815383911,
+    "pred_log_kd_max": 3.2348403930664062,
+    "pred_log_kd_mean": 2.301365852355957,
+    "constant_baseline": {
+      "majority_class": "weak",
+      "majority_macro_f1": 0.3253277355888951,
+      "mean_log_kd": 2.265215338158597,
+      "mean_log_kd_mae": 0.6637835193106979
+    }
+  }
+}
