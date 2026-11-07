@@ -63,7 +63,8 @@ def load_real(root: Path):
 def load_pseudo(candidates_path: Path, real_train: list[dict], top_k: int,
                 min_delta: float, score_min: float, score_max: float,
                 target_weight: float, affinity_weight: float,
-                regression_weight: float):
+                regression_weight: float, label_mode: str = "absolute",
+                max_delta: float | None = None):
     real_by_id = {s["sample_id"]: s for s in real_train}
     real_vh = {s["vh_sequence_aa"] for s in real_train}
     grouped = defaultdict(list)
@@ -73,27 +74,36 @@ def load_pseudo(candidates_path: Path, real_train: list[dict], top_k: int,
             if parent is None:
                 continue
             delta = float(row["delta_vs_parent"])
-            score = float(row["score"])
-            if delta < min_delta or not (score_min <= score <= score_max):
+            teacher_score = float(row["score"])
+            if delta < min_delta or (max_delta is not None and delta > max_delta):
                 continue
-            grouped[row["parent_sample_id"]].append((delta, score, row["vh"], row["target_id"]))
+            if label_mode == "delta_anchored":
+                pseudo_log_kd = parent["log_kd_nm"] + delta
+            elif label_mode == "absolute":
+                pseudo_log_kd = teacher_score
+            else:
+                raise ValueError(f"unknown label_mode: {label_mode}")
+            if not (score_min <= pseudo_log_kd <= score_max):
+                continue
+            grouped[row["parent_sample_id"]].append(
+                (delta, pseudo_log_kd, row["vh"], row["target_id"]))
 
     pseudo = []
     seen_vh = set()
     for parent_id, rows in grouped.items():
         parent = real_by_id[parent_id]
         rows.sort(key=lambda item: item[0], reverse=True)
-        for index, (delta, score, vh, target_id) in enumerate(rows[:top_k]):
+        for index, (delta, pseudo_log_kd, vh, target_id) in enumerate(rows[:top_k]):
             if vh in real_vh or vh in seen_vh:
                 continue
             seen_vh.add(vh)
-            class_name = str(logkd_to_class(score))
+            class_name = str(logkd_to_class(pseudo_log_kd))
             pseudo.append({
                 "sample_id": f"pseudo_{parent_id}_{index}",
                 "target_id": parent["target_id"],
                 "vh_sequence_aa": vh,
                 "antigen_sequence": parent["antigen_sequence"],
-                "log_kd_nm": float(score),
+                "log_kd_nm": float(pseudo_log_kd),
                 "affinity_class": class_name,
                 "target_sample_weight": target_weight,
                 "affinity_sample_weight": affinity_weight,
@@ -230,6 +240,8 @@ def main() -> dict:
     parser.add_argument("--target-weight", type=float, default=0.25)
     parser.add_argument("--affinity-weight", type=float, default=0.1)
     parser.add_argument("--regression-weight", type=float, default=0.1)
+    parser.add_argument("--label-mode", choices=("absolute", "delta_anchored"), default="absolute")
+    parser.add_argument("--max-delta", type=float, default=None)
     parser.add_argument("--epochs", type=int, default=CONFIG["epochs"])
     parser.add_argument("--seeds", default="2026,2027,2028")
     parser.add_argument("--out", type=Path, default=None)
@@ -238,7 +250,8 @@ def main() -> dict:
     train, val = load_real(args.data_root)
     pseudo = load_pseudo(args.candidates, train, args.top_k_per_parent, args.min_delta,
                          args.score_min, args.score_max, args.target_weight,
-                         args.affinity_weight, args.regression_weight)
+                         args.affinity_weight, args.regression_weight,
+                         label_mode=args.label_mode, max_delta=args.max_delta)
     print(f"real train={len(train)} val={len(val)} pseudo={len(pseudo)}", flush=True)
 
     config = dict(CONFIG)
@@ -266,6 +279,7 @@ def main() -> dict:
                "pseudo_weights": {"target": args.target_weight,
                                   "affinity": args.affinity_weight,
                                   "regression": args.regression_weight},
+               "label_mode": args.label_mode, "max_delta": args.max_delta,
                "results": results, "summary": summary}
     out_path = args.out or (args.candidates.parent / "pseudo_train_metrics.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
