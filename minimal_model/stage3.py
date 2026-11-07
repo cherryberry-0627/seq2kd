@@ -231,8 +231,7 @@ class Stage3CandidateModel(nn.Module):
             parts.append(cross)
         if epitope_cross is not None:
             parts.append(epitope_cross)
-        fusion_input = torch.cat(parts, dim=-1)
-        pair = self.fusion(fusion_input)
+        pair = self.fusion(torch.cat(parts, dim=-1))
 
         target_input = torch.cat([vh_pooled, cdr_global], dim=-1) if self.use_cdr else vh_pooled
         return {
@@ -240,7 +239,6 @@ class Stage3CandidateModel(nn.Module):
             "affinity_logits": self.affinity_head(pair),
             "log_kd_pred": self.z_head(pair).squeeze(-1),
             "rank_score": self.rank_head(pair).squeeze(-1),
-            "fusion_input": fusion_input,
             "vh_embedding": vh_pooled,
             "candidate_antigen_embedding": antigen,
             "chunk_weights": chunk_weights,

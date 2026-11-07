@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""无注意力、无 Transformer 的纯 KNN 基线。
+"""无注意力、无 Transformer 的纯 KNN 基线（自包含版本）。
 
-特征：氨基酸比例 + 长度/疏水/电荷 + 2-mer 频率。
+特征：20 种氨基酸比例 + 长度/疏水/电荷 + 2-mer 频率。
 任务一：VH 特征 -> 5 类 KNN。
 任务二：VH+抗原特征拼接 -> 3 类 KNN + KNN 回归。
-单 seed、单配置；只读 train/val。
+只读 train/val，单 seed、单配置；不依赖仓库内其他模块。
 """
 from __future__ import annotations
 
@@ -17,15 +17,35 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from minimal_model.io import read_dataset
-from minimal_model.metrics import mae, macro_f1
-
 AA = "ACDEFGHIKLMNPQRSTVWY"
 HYDRO = set("AILMFWVY")
 POS = set("KRH")
 NEG = set("DE")
 TARGET_IDS = ("T01", "T02", "T03", "T04", "T05")
 AFFINITY_IDS = ("medium", "strong", "weak")
+
+
+def read_dataset(path: Path) -> list[dict]:
+    with Path(path).open(encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def macro_f1(y_true, y_pred, classes) -> float:
+    values = []
+    for cls in classes:
+        tp = sum(a == cls and b == cls for a, b in zip(y_true, y_pred))
+        fp = sum(a != cls and b == cls for a, b in zip(y_true, y_pred))
+        fn = sum(a == cls and b != cls for a, b in zip(y_true, y_pred))
+        precision = tp / (tp + fp) if tp + fp else 0.0
+        recall = tp / (tp + fn) if tp + fn else 0.0
+        values.append(2 * precision * recall / (precision + recall)
+                      if precision + recall else 0.0)
+    return float(np.mean(values))
+
+
+def mae(y_true, y_pred) -> float:
+    return float(np.mean(np.abs(
+        np.asarray(y_true, dtype=float) - np.asarray(y_pred, dtype=float))))
 
 
 def seq_features(sequence: str) -> np.ndarray:
@@ -92,9 +112,10 @@ def knn_regress(query, ref, values, k, device):
 
 
 def main() -> dict:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent)
-    parser.add_argument("--k", type=int, default=25)
+    parser = argparse.ArgumentParser(description="No-attention KNN baseline")
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent,
+                        help="directory containing data/train.csv and data/val.csv")
+    parser.add_argument("--k", type=int, default=3)
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--submission", type=Path, default=None)
     args = parser.parse_args()
@@ -118,13 +139,13 @@ def main() -> dict:
     x_val2 = feature_matrix(val, "affinity")
     x_train2, x_val2 = standardize(x_train2, x_val2)
     y_affinity = np.array([AFFINITY_IDS.index(s["affinity_class"]) for s in train])
-    y_log_kd = np.array([s["log_kd_nm"] for s in train], dtype=float)
+    y_log_kd = np.array([float(s["log_kd_nm"]) for s in train], dtype=float)
     affinity_scores = knn_classify(x_val2, x_train2, y_affinity, args.k, 3, device)
     affinity_pred = np.array(AFFINITY_IDS)[affinity_scores.argmax(axis=1)]
     affinity_true = np.array([s["affinity_class"] for s in val])
     affinity_f1 = macro_f1(affinity_true, affinity_pred, list(AFFINITY_IDS))
     log_kd_pred = knn_regress(x_val2, x_train2, y_log_kd, args.k, device)
-    log_kd_true = np.array([s["log_kd_nm"] for s in val], dtype=float)
+    log_kd_true = np.array([float(s["log_kd_nm"]) for s in val], dtype=float)
     error = mae(log_kd_true, log_kd_pred)
     sample_ids = [s["sample_id"] for s in val]
 
