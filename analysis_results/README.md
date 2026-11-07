@@ -53,8 +53,21 @@ Earlier main-model / external-data experiments:
 
 ### `augmentation/`
 
-Route-1 CDR mutation augmentation with AlphaBind as the constraint (pending /
-will be added when the run finishes).
+Route-1 CDR mutation augmentation, 3,280 generated mutations, 20 Stage3 epochs:
+
+| arm | accepted | n_train | target F1 | affinity F1 | MAE | S |
+|---|---:|---:|---:|---:|---:|---:|
+| baseline | 0 | 3,333 | **0.7487** | **0.5889** | **0.6900** | **0.6600** |
+| original heuristic (Stage3 teacher) | 2,397 | 5,730 | 0.6989 | 0.5743 | 0.7241 | 0.6340 |
+| AlphaBind constraint | 801 / 1,830 covered | 4,134 | 0.7176 | 0.5753 | 0.6968 | 0.6447 |
+
+- The original heuristic accepts 73% of mutations and degrades S by -0.026.
+- AlphaBind accepts 44% of covered mutations (801/1,830) and degrades S by
+  -0.015; it is less harmful than the heuristic but still worse than baseline.
+- Conclusion: route-1 CDR mutation augmentation does not become viable merely
+  by replacing the heuristic with AlphaBind; the inherited-label pseudo samples
+  remain noisy. A stricter, higher-confidence subset / lower weight could be a
+  follow-up, but is not yet tested.
 
 ## Key numbers
 
