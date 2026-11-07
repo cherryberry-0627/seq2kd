@@ -64,9 +64,10 @@ def load_pseudo(candidates_path: Path, real_train: list[dict], top_k: int,
                 min_delta: float, score_min: float, score_max: float,
                 target_weight: float, affinity_weight: float,
                 regression_weight: float, label_mode: str = "absolute",
-                max_delta: float | None = None):
+                max_delta: float | None = None, consistency_mode: str = "none"):
     real_by_id = {s["sample_id"]: s for s in real_train}
     real_vh = {s["vh_sequence_aa"] for s in real_train}
+    class_rank = {"weak": 0, "medium": 1, "strong": 2}
     grouped = defaultdict(list)
     with candidates_path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
@@ -85,6 +86,15 @@ def load_pseudo(candidates_path: Path, real_train: list[dict], top_k: int,
                 raise ValueError(f"unknown label_mode: {label_mode}")
             if not (score_min <= pseudo_log_kd <= score_max):
                 continue
+            pseudo_class = str(logkd_to_class(pseudo_log_kd))
+            parent_class = parent["affinity_class"]
+            if consistency_mode == "same_class" and pseudo_class != parent_class:
+                continue
+            if consistency_mode == "no_two_step" and abs(
+                    class_rank[pseudo_class] - class_rank[parent_class]) > 1:
+                continue
+            if consistency_mode not in ("none", "same_class", "no_two_step"):
+                raise ValueError(f"unknown consistency_mode: {consistency_mode}")
             grouped[row["parent_sample_id"]].append(
                 (delta, pseudo_log_kd, row["vh"], row["target_id"]))
 
@@ -242,6 +252,8 @@ def main() -> dict:
     parser.add_argument("--regression-weight", type=float, default=0.1)
     parser.add_argument("--label-mode", choices=("absolute", "delta_anchored"), default="absolute")
     parser.add_argument("--max-delta", type=float, default=None)
+    parser.add_argument("--consistency-mode", choices=("none", "same_class", "no_two_step"),
+                        default="none")
     parser.add_argument("--epochs", type=int, default=CONFIG["epochs"])
     parser.add_argument("--seeds", default="2026,2027,2028")
     parser.add_argument("--out", type=Path, default=None)
@@ -251,7 +263,8 @@ def main() -> dict:
     pseudo = load_pseudo(args.candidates, train, args.top_k_per_parent, args.min_delta,
                          args.score_min, args.score_max, args.target_weight,
                          args.affinity_weight, args.regression_weight,
-                         label_mode=args.label_mode, max_delta=args.max_delta)
+                         label_mode=args.label_mode, max_delta=args.max_delta,
+                         consistency_mode=args.consistency_mode)
     print(f"real train={len(train)} val={len(val)} pseudo={len(pseudo)}", flush=True)
 
     config = dict(CONFIG)
@@ -280,6 +293,7 @@ def main() -> dict:
                                   "affinity": args.affinity_weight,
                                   "regression": args.regression_weight},
                "label_mode": args.label_mode, "max_delta": args.max_delta,
+               "consistency_mode": args.consistency_mode,
                "results": results, "summary": summary}
     out_path = args.out or (args.candidates.parent / "pseudo_train_metrics.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
