@@ -1,0 +1,46 @@
+device: cuda config: {'epochs': 100, 'batch_size': 16, 'lambda_target': 0.3, 'lambda_rel': 0.3}
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+epoch   1 loss=2.5488 val_S=0.3329 targetF1=0.0824 affF1=0.3203 MAE=0.8798 elapsed=7s
+epoch   2 loss=2.4283 val_S=0.4392 targetF1=0.3797 affF1=0.3566 MAE=0.8543 elapsed=13s
+epoch   3 loss=2.3191 val_S=0.4765 targetF1=0.3947 affF1=0.4410 MAE=0.8357 elapsed=19s
+epoch   4 loss=2.1821 val_S=0.5192 targetF1=0.4877 affF1=0.4683 MAE=0.8058 elapsed=25s
+epoch   5 loss=2.0887 val_S=0.5343 targetF1=0.5286 affF1=0.4662 MAE=0.7852 elapsed=31s
+epoch   6 loss=1.9955 val_S=0.5656 targetF1=0.5410 affF1=0.5325 MAE=0.7603 elapsed=37s
+epoch   7 loss=1.9232 val_S=0.5793 targetF1=0.5790 affF1=0.5460 MAE=0.7742 elapsed=43s
+epoch   8 loss=1.8646 val_S=0.5712 targetF1=0.5452 affF1=0.5429 MAE=0.7563 elapsed=49s
+epoch   9 loss=1.7795 val_S=0.5849 targetF1=0.5987 affF1=0.5323 MAE=0.7488 elapsed=56s
+epoch  10 loss=1.7131 val_S=0.6103 targetF1=0.6434 affF1=0.5566 MAE=0.7289 elapsed=62s
+epoch  11 loss=1.6533 val_S=0.5962 targetF1=0.6116 affF1=0.5552 MAE=0.7521 elapsed=68s
+epoch  12 loss=1.6287 val_S=0.6006 targetF1=0.6334 affF1=0.5428 MAE=0.7394 elapsed=74s
+epoch  13 loss=1.5698 val_S=0.6125 targetF1=0.6607 affF1=0.5558 MAE=0.7443 elapsed=80s
+epoch  14 loss=1.5041 val_S=0.6136 targetF1=0.6780 affF1=0.5454 MAE=0.7470 elapsed=85s
+epoch  15 loss=1.4412 val_S=0.6085 targetF1=0.6594 affF1=0.5479 MAE=0.7492 elapsed=91s
+epoch  16 loss=1.3992 val_S=0.6177 targetF1=0.6480 affF1=0.5720 MAE=0.7251 elapsed=98s
+epoch  17 loss=1.3617 val_S=0.6363 targetF1=0.6821 affF1=0.5906 MAE=0.7142 elapsed=104s
+epoch  18 loss=1.3450 val_S=0.6038 targetF1=0.6517 affF1=0.5395 MAE=0.7460 elapsed=110s
+epoch  19 loss=1.3030 val_S=0.6177 targetF1=0.6480 affF1=0.5697 MAE=0.7204 elapsed=116s
+epoch  20 loss=1.2405 val_S=0.6467 targetF1=0.7128 affF1=0.5859 MAE=0.6983 elapsed=122s
+epoch  21 loss=1.2070 val_S=0.6348 targetF1=0.6855 affF1=0.5800 MAE=0.7076 elapsed=129s
+epoch  22 loss=1.1826 val_S=0.6352 targetF1=0.6926 affF1=0.5708 MAE=0.6994 elapsed=135s
+epoch  23 loss=1.1570 val_S=0.6331 targetF1=0.6829 affF1=0.5764 MAE=0.7059 elapsed=141s
+epoch  24 loss=1.1177 val_S=0.6413 targetF1=0.7060 affF1=0.5766 MAE=0.6988 elapsed=147s
+epoch  25 loss=1.0738 val_S=0.6275 targetF1=0.6965 affF1=0.5627 MAE=0.7335 elapsed=153s
+epoch  26 loss=1.0535 val_S=0.6301 targetF1=0.6871 affF1=0.5747 MAE=0.7270 elapsed=159s
+epoch  27 loss=1.0098 val_S=0.6401 targetF1=0.7026 affF1=0.5945 MAE=0.7357 elapsed=166s
+epoch  28 loss=0.9986 val_S=0.6338 targetF1=0.6877 affF1=0.5792 MAE=0.7154 elapsed=172s
+epoch  29 loss=0.9667 val_S=0.6551 targetF1=0.7100 affF1=0.6104 MAE=0.6944 elapsed=179s
+epoch  30 loss=0.9485 val_S=0.6425 targetF1=0.6979 affF1=0.5929 MAE=0.7105 elapsed=185s
+epoch  31 loss=0.9125 val_S=0.6516 targetF1=0.7104 affF1=0.6009 MAE=0.6964 elapsed=192s
+epoch  32 loss=0.9038 val_S=0.6405 targetF1=0.7017 affF1=0.5763 MAE=0.6956 elapsed=198s
+epoch  33 loss=0.8842 val_S=0.6480 targetF1=0.7038 affF1=0.6042 MAE=0.7119 elapsed=204s
+epoch  34 loss=0.8508 val_S=0.6453 targetF1=0.7091 affF1=0.5920 MAE=0.7122 elapsed=210s
+epoch  35 loss=0.8450 val_S=0.6438 targetF1=0.6993 affF1=0.5934 MAE=0.7070 elapsed=217s
+epoch  36 loss=0.8267 val_S=0.6502 targetF1=0.7139 affF1=0.5977 MAE=0.7038 elapsed=223s
+epoch  37 loss=0.8234 val_S=0.6484 targetF1=0.7209 affF1=0.5848 MAE=0.7004 elapsed=229s
+epoch  38 loss=0.8025 val_S=0.6378 targetF1=0.6914 affF1=0.5857 MAE=0.7119 elapsed=235s
+epoch  39 loss=0.7899 val_S=0.6399 targetF1=0.7059 affF1=0.5855 MAE=0.7246 elapsed=241s
+epoch  40 loss=0.7756 val_S=0.6498 targetF1=0.7038 affF1=0.5980 MAE=0.6896 elapsed=247s
+epoch  41 loss=0.8052 val_S=0.6446 targetF1=0.7310 affF1=0.5801 MAE=0.7298 elapsed=253s
+early stop at epoch 41; best 29
+saved /root/autodl-tmp/seq2kd-experiments/checkpoints/multihead_best.pt (epoch 29, S=0.6551)

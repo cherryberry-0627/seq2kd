@@ -1,0 +1,45 @@
+device: cuda protparam_dim: 116 config: {'epochs': 100, 'batch_size': 32, 'hidden_size': 64}
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/tokenizer.py:92: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:254.)
+  "protparam_features": torch.tensor(
+epoch   1 loss=3.0273 val_S=0.4572 targetF1=0.2937 affF1=0.4792 MAE=0.8491 elapsed=5s
+epoch   2 loss=2.7643 val_S=0.4783 targetF1=0.4785 affF1=0.3828 MAE=0.8525 elapsed=10s
+epoch   3 loss=2.5803 val_S=0.5305 targetF1=0.5601 affF1=0.4452 MAE=0.8188 elapsed=14s
+epoch   4 loss=2.3888 val_S=0.5624 targetF1=0.5987 affF1=0.5086 MAE=0.8297 elapsed=19s
+epoch   5 loss=2.2427 val_S=0.5701 targetF1=0.6083 affF1=0.5029 MAE=0.7907 elapsed=24s
+epoch   6 loss=2.0989 val_S=0.5947 targetF1=0.6561 affF1=0.5216 MAE=0.7694 elapsed=28s
+epoch   7 loss=1.9826 val_S=0.6169 targetF1=0.6914 affF1=0.5470 MAE=0.7539 elapsed=33s
+epoch   8 loss=1.8634 val_S=0.6157 targetF1=0.6866 affF1=0.5419 MAE=0.7427 elapsed=39s
+epoch   9 loss=1.7530 val_S=0.6169 targetF1=0.6894 affF1=0.5468 MAE=0.7506 elapsed=44s
+epoch  10 loss=1.6718 val_S=0.6158 targetF1=0.6726 affF1=0.5559 MAE=0.7459 elapsed=49s
+epoch  11 loss=1.5716 val_S=0.6251 targetF1=0.7191 affF1=0.5321 MAE=0.7248 elapsed=54s
+epoch  12 loss=1.4928 val_S=0.6353 targetF1=0.7139 affF1=0.5622 MAE=0.7178 elapsed=59s
+epoch  13 loss=1.4270 val_S=0.6353 targetF1=0.7162 affF1=0.5645 MAE=0.7265 elapsed=64s
+epoch  14 loss=1.3749 val_S=0.6316 targetF1=0.7025 affF1=0.5603 MAE=0.7158 elapsed=69s
+epoch  15 loss=1.2754 val_S=0.6418 targetF1=0.7178 affF1=0.5715 MAE=0.7063 elapsed=74s
+epoch  16 loss=1.2075 val_S=0.6499 targetF1=0.7391 affF1=0.5798 MAE=0.7131 elapsed=79s
+epoch  17 loss=1.1260 val_S=0.6342 targetF1=0.7137 affF1=0.5609 MAE=0.7213 elapsed=84s
+epoch  18 loss=1.1151 val_S=0.6385 targetF1=0.7215 affF1=0.5713 MAE=0.7308 elapsed=89s
+epoch  19 loss=1.0270 val_S=0.6409 targetF1=0.7167 affF1=0.5771 MAE=0.7203 elapsed=94s
+epoch  20 loss=0.9950 val_S=0.6478 targetF1=0.7203 affF1=0.5934 MAE=0.7197 elapsed=99s
+epoch  21 loss=0.9464 val_S=0.6502 targetF1=0.7472 affF1=0.5996 MAE=0.7647 elapsed=104s
+epoch  22 loss=0.9012 val_S=0.6468 targetF1=0.7298 affF1=0.5870 MAE=0.7291 elapsed=109s
+epoch  23 loss=0.8557 val_S=0.6543 targetF1=0.7351 affF1=0.5953 MAE=0.7116 elapsed=114s
+epoch  24 loss=0.8372 val_S=0.6420 targetF1=0.7210 affF1=0.5861 MAE=0.7396 elapsed=119s
+epoch  25 loss=0.8052 val_S=0.6506 targetF1=0.7404 affF1=0.5820 MAE=0.7153 elapsed=124s
+epoch  26 loss=0.7587 val_S=0.6606 targetF1=0.7409 affF1=0.6108 MAE=0.7169 elapsed=129s
+epoch  27 loss=0.7246 val_S=0.6539 targetF1=0.7470 affF1=0.6021 MAE=0.7485 elapsed=134s
+epoch  28 loss=0.7153 val_S=0.6593 targetF1=0.7443 affF1=0.5972 MAE=0.7030 elapsed=139s
+epoch  29 loss=0.6847 val_S=0.6576 targetF1=0.7432 affF1=0.5950 MAE=0.7064 elapsed=144s
+epoch  30 loss=0.6549 val_S=0.6493 targetF1=0.7409 affF1=0.5853 MAE=0.7302 elapsed=149s
+epoch  31 loss=0.6326 val_S=0.6591 targetF1=0.7506 affF1=0.5975 MAE=0.7153 elapsed=154s
+epoch  32 loss=0.6082 val_S=0.6577 targetF1=0.7566 affF1=0.5889 MAE=0.7167 elapsed=159s
+epoch  33 loss=0.6114 val_S=0.6533 targetF1=0.7267 affF1=0.5933 MAE=0.6993 elapsed=164s
+epoch  34 loss=0.5683 val_S=0.6479 targetF1=0.7320 affF1=0.5807 MAE=0.7139 elapsed=169s
+epoch  35 loss=0.5790 val_S=0.6557 targetF1=0.7443 affF1=0.5972 MAE=0.7237 elapsed=174s
+epoch  36 loss=0.5552 val_S=0.6503 targetF1=0.7335 affF1=0.5885 MAE=0.7182 elapsed=179s
+epoch  37 loss=0.5347 val_S=0.6441 targetF1=0.7405 affF1=0.5676 MAE=0.7239 elapsed=184s
+epoch  38 loss=0.5446 val_S=0.6523 targetF1=0.7267 affF1=0.5936 MAE=0.7056 elapsed=189s
+early stop at epoch 38; best 26
+saved /root/autodl-tmp/seq2kd-experiments/checkpoints/protparam_best.pt (epoch 26, S=0.6606)

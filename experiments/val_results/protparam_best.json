@@ -1,0 +1,337 @@
+{
+  "config": {
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "batch_size": 32,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": false,
+    "epochs": 100,
+    "protparam_dim": 116,
+    "protparam_projection_size": 32
+  },
+  "best_epoch": 26,
+  "best_score": 0.6605836741567781,
+  "metrics": {
+    "target_macro_f1": 0.7409147904795597,
+    "affinity_macro_f1": 0.6107596587456215,
+    "log_kd_mae": 0.7168951059888993,
+    "combined_score": 0.6605836741567781
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 3.0273328573539957,
+      "target_loss": 1.4600157309250898,
+      "affinity_loss": 1.0568224256402767,
+      "regression_loss": 0.5104947105170798,
+      "val_combined": 0.45724350986045886
+    },
+    {
+      "epoch": 2,
+      "loss": 2.7643067862513258,
+      "target_loss": 1.2712069442956755,
+      "affinity_loss": 1.0166405518599326,
+      "regression_loss": 0.47645929539808096,
+      "val_combined": 0.4783361694061036
+    },
+    {
+      "epoch": 3,
+      "loss": 2.5803110637430167,
+      "target_loss": 1.128953583491589,
+      "affinity_loss": 0.9891733356756811,
+      "regression_loss": 0.46218414167867133,
+      "val_combined": 0.5305441350941513
+    },
+    {
+      "epoch": 4,
+      "loss": 2.3887732427756134,
+      "target_loss": 0.9906676766788712,
+      "affinity_loss": 0.9570754369099935,
+      "regression_loss": 0.4410301379025644,
+      "val_combined": 0.5624130418591858
+    },
+    {
+      "epoch": 5,
+      "loss": 2.2426864310423964,
+      "target_loss": 0.8890003082346637,
+      "affinity_loss": 0.9316053821129946,
+      "regression_loss": 0.4220807474098726,
+      "val_combined": 0.5701411500078655
+    },
+    {
+      "epoch": 6,
+      "loss": 2.0988503365126094,
+      "target_loss": 0.8020470231780411,
+      "affinity_loss": 0.8966735827468588,
+      "regression_loss": 0.40012973272251434,
+      "val_combined": 0.5947415499413087
+    },
+    {
+      "epoch": 7,
+      "loss": 1.9825739394856614,
+      "target_loss": 0.739844806910348,
+      "affinity_loss": 0.858821118607594,
+      "regression_loss": 0.3839080072123476,
+      "val_combined": 0.6169357768603749
+    },
+    {
+      "epoch": 8,
+      "loss": 1.8634394266531698,
+      "target_loss": 0.6718878321709519,
+      "affinity_loss": 0.8233170741998573,
+      "regression_loss": 0.3682345241339508,
+      "val_combined": 0.6156628207902519
+    },
+    {
+      "epoch": 9,
+      "loss": 1.7530313593612359,
+      "target_loss": 0.6180841007543476,
+      "affinity_loss": 0.7851757182396821,
+      "regression_loss": 0.34977154148937595,
+      "val_combined": 0.6168546481801611
+    },
+    {
+      "epoch": 10,
+      "loss": 1.671796062455462,
+      "target_loss": 0.5724106624861075,
+      "affinity_loss": 0.7595831917600521,
+      "regression_loss": 0.3398022115579282,
+      "val_combined": 0.6158128965638112
+    },
+    {
+      "epoch": 11,
+      "loss": 1.5715907032054142,
+      "target_loss": 0.5343258567947974,
+      "affinity_loss": 0.7133776888345191,
+      "regression_loss": 0.3238871550545691,
+      "val_combined": 0.6251195697292751
+    },
+    {
+      "epoch": 12,
+      "loss": 1.4927515908114517,
+      "target_loss": 0.4878048554863116,
+      "affinity_loss": 0.6914643053621492,
+      "regression_loss": 0.31348243122822594,
+      "val_combined": 0.6352949205361573
+    },
+    {
+      "epoch": 13,
+      "loss": 1.426964392416691,
+      "target_loss": 0.4599820247085968,
+      "affinity_loss": 0.6629769906441871,
+      "regression_loss": 0.3040053828737058,
+      "val_combined": 0.6352926805827772
+    },
+    {
+      "epoch": 14,
+      "loss": 1.3749358847518243,
+      "target_loss": 0.42665443287091037,
+      "affinity_loss": 0.6496754883110363,
+      "regression_loss": 0.29860595983899896,
+      "val_combined": 0.6315962688666851
+    },
+    {
+      "epoch": 15,
+      "loss": 1.2754353719754796,
+      "target_loss": 0.39397309347651865,
+      "affinity_loss": 0.6063584850745054,
+      "regression_loss": 0.2751037954989046,
+      "val_combined": 0.6417500079083063
+    },
+    {
+      "epoch": 16,
+      "loss": 1.2075116781010986,
+      "target_loss": 0.3546999240114708,
+      "affinity_loss": 0.580178240756176,
+      "regression_loss": 0.2726335096361041,
+      "val_combined": 0.6498771504995224
+    },
+    {
+      "epoch": 17,
+      "loss": 1.1260467880737164,
+      "target_loss": 0.31885255589307765,
+      "affinity_loss": 0.5454362475439267,
+      "regression_loss": 0.2617579865189168,
+      "val_combined": 0.6341943932902913
+    },
+    {
+      "epoch": 18,
+      "loss": 1.1151148272891178,
+      "target_loss": 0.33162130460706407,
+      "affinity_loss": 0.5239238818504415,
+      "regression_loss": 0.2595696441500601,
+      "val_combined": 0.638526983361387
+    },
+    {
+      "epoch": 19,
+      "loss": 1.026966104699154,
+      "target_loss": 0.28703156069810776,
+      "affinity_loss": 0.4929524671734542,
+      "regression_loss": 0.24698208652251194,
+      "val_combined": 0.6409357871232882
+    },
+    {
+      "epoch": 20,
+      "loss": 0.9949988791651458,
+      "target_loss": 0.2777436560887744,
+      "affinity_loss": 0.47516942669813816,
+      "regression_loss": 0.24208580081326234,
+      "val_combined": 0.647838359887857
+    },
+    {
+      "epoch": 21,
+      "loss": 0.9464009255752025,
+      "target_loss": 0.2532903271512945,
+      "affinity_loss": 0.45416551605738786,
+      "regression_loss": 0.23894507794713887,
+      "val_combined": 0.6501844745499531
+    },
+    {
+      "epoch": 22,
+      "loss": 0.9011983676890943,
+      "target_loss": 0.2422639880929575,
+      "affinity_loss": 0.42935575878355475,
+      "regression_loss": 0.22957861602547788,
+      "val_combined": 0.6468005330985642
+    },
+    {
+      "epoch": 23,
+      "loss": 0.8557198853454109,
+      "target_loss": 0.22089041070775106,
+      "affinity_loss": 0.41111950816387105,
+      "regression_loss": 0.22370996560142486,
+      "val_combined": 0.6543436794472637
+    },
+    {
+      "epoch": 24,
+      "loss": 0.8372144316575422,
+      "target_loss": 0.2256911227179475,
+      "affinity_loss": 0.39503478255383323,
+      "regression_loss": 0.2164885283115566,
+      "val_combined": 0.642015181421084
+    },
+    {
+      "epoch": 25,
+      "loss": 0.805177102674066,
+      "target_loss": 0.20602349721022709,
+      "affinity_loss": 0.3829378608805333,
+      "regression_loss": 0.21621574663092988,
+      "val_combined": 0.6506239453744016
+    },
+    {
+      "epoch": 26,
+      "loss": 0.7586676400772916,
+      "target_loss": 0.18588233006597818,
+      "affinity_loss": 0.3630125359273014,
+      "regression_loss": 0.20977277619422752,
+      "val_combined": 0.6605836741567781
+    },
+    {
+      "epoch": 27,
+      "loss": 0.7246084566092011,
+      "target_loss": 0.18273843354535754,
+      "affinity_loss": 0.3358349689222959,
+      "regression_loss": 0.20603505469704403,
+      "val_combined": 0.6538604361932564
+    },
+    {
+      "epoch": 28,
+      "loss": 0.7153330857496951,
+      "target_loss": 0.15833403366376714,
+      "affinity_loss": 0.3463430499980445,
+      "regression_loss": 0.21065600087182715,
+      "val_combined": 0.6592773738851114
+    },
+    {
+      "epoch": 29,
+      "loss": 0.6846783362706789,
+      "target_loss": 0.15812098018728932,
+      "affinity_loss": 0.326742552786377,
+      "regression_loss": 0.19981480680211613,
+      "val_combined": 0.6575843515353904
+    },
+    {
+      "epoch": 30,
+      "loss": 0.6548943918029575,
+      "target_loss": 0.14858228327751724,
+      "affinity_loss": 0.3107629137830694,
+      "regression_loss": 0.1955491917645416,
+      "val_combined": 0.6493390231635611
+    },
+    {
+      "epoch": 31,
+      "loss": 0.6325506639487745,
+      "target_loss": 0.15117756261088194,
+      "affinity_loss": 0.2910995151643062,
+      "regression_loss": 0.19027358642255368,
+      "val_combined": 0.6591349971346776
+    },
+    {
+      "epoch": 32,
+      "loss": 0.608162889529233,
+      "target_loss": 0.1302303919876584,
+      "affinity_loss": 0.2913383442093723,
+      "regression_loss": 0.18659415399499782,
+      "val_combined": 0.6576637206347156
+    },
+    {
+      "epoch": 33,
+      "loss": 0.6114469691149794,
+      "target_loss": 0.14960003889451112,
+      "affinity_loss": 0.27704773633608115,
+      "regression_loss": 0.18479919712571385,
+      "val_combined": 0.6533014737478802
+    },
+    {
+      "epoch": 34,
+      "loss": 0.5682828437538072,
+      "target_loss": 0.13140060196239742,
+      "affinity_loss": 0.26174861546790246,
+      "regression_loss": 0.17513362517227757,
+      "val_combined": 0.6479037930631635
+    },
+    {
+      "epoch": 35,
+      "loss": 0.5790305698450857,
+      "target_loss": 0.12780299620910196,
+      "affinity_loss": 0.26961689924347915,
+      "regression_loss": 0.1816106755705592,
+      "val_combined": 0.6556853275533931
+    },
+    {
+      "epoch": 36,
+      "loss": 0.5551520641809321,
+      "target_loss": 0.12492939214173374,
+      "affinity_loss": 0.2535454651238573,
+      "regression_loss": 0.17667720702686648,
+      "val_combined": 0.650342779406943
+    },
+    {
+      "epoch": 37,
+      "loss": 0.5346930817087027,
+      "target_loss": 0.10934546254541722,
+      "affinity_loss": 0.24849147723130982,
+      "regression_loss": 0.17685614218457554,
+      "val_combined": 0.6441031564018714
+    },
+    {
+      "epoch": 38,
+      "loss": 0.5446151234064237,
+      "target_loss": 0.10474273109539757,
+      "affinity_loss": 0.26296215922203714,
+      "regression_loss": 0.17691023642084922,
+      "val_combined": 0.6522846490509596
+    }
+  ]
+}
