@@ -152,6 +152,54 @@ Conclusions:
   adding more pseudo-labelled data. External mutation data (SKEMPI/AB-Bind) or
   wet-lab validation is required before treating generated Kd as real.
 
+## Teacher distillation (priority 6)
+
+The fine-tuned AlphaBind teacher scored 1,821 real train pairs:
+in-sample Spearman 0.9166, raw MAE 0.356, calibrated MAE 0.343.
+Distillation is applied only on those real samples; no pseudo-samples are added.
+
+3 seeds, mean ± std:
+
+| mode | target F1 | affinity F1 | log-Kd MAE | S |
+|---|---:|---:|---:|---:|
+| none (baseline) | 0.6470 ± 0.0230 | **0.5353 ± 0.0027** | 0.7774 ± 0.0036 | 0.5954 ± 0.0076 |
+| rank (weight 0.2) | **0.6576 ± 0.0091** | 0.5258 ± 0.0194 | 0.7729 ± 0.0299 | **0.5960 ± 0.0147** |
+| mse (weight 0.1) | 0.6415 ± 0.0218 | 0.5304 ± 0.0229 | **0.7625 ± 0.0139** | 0.5947 ± 0.0150 |
+
+Rank distillation changes S by +0.0006; MSE changes it by -0.0007. Both are
+inside seed noise. The teacher is in-sample on these 1,821 pairs and covers only
+T01/T02/T05, so distillation does not add stable information beyond the
+measured labels.
+
+## Overall conclusion
+
+The AlphaBind pipeline was validated end-to-end, but it does **not** improve the
+seq2kd model on the current data:
+
+1. **Zero-shot** AlphaBind has almost no ranking signal on our pairs
+   (Spearman 0.13 on 100 pairs; 0.016 on full 384).
+2. **Fine-tuning** AlphaBind on T01/T02/T05 works well as a standalone scorer
+   (val Spearman 0.743, MAE 0.515), but this is a model trained on our own
+   labels, not a zero-shot external prior.
+3. **Pseudo-samples** are the bottleneck. Hard class labels hurt affinity
+   (-0.019). Regression-only absolute labels are the only non-harmful variant
+   (+0.004 S, within noise). Delta anchoring (-0.018), parent-class consistency
+   (-0.014) and H3+H2 diversity (-0.002) do not help. The pseudo set has only 10
+   train parents, is in-sample, and 383/806 medium-parent mutants were labelled
+   strong by the teacher.
+4. **Teacher distillation** on real samples is neutral (+0.0006 rank, -0.0007
+   MSE), also within noise.
+5. The current data has **no measured mutant Kd**, and AlphaBind is limited to
+   T01/T02/T05 by its 600 aa combined-length cap. T03/T04 cannot be covered by
+   this teacher.
+
+Recommendation: stop tuning pseudo-sample variants for this teacher. Use the
+fine-tuned AlphaBind as an external candidate **scorer**, not as a source of
+training labels. To make affinity maturation training useful, obtain measured
+parent-mutant Kd data (SKEMPI/AB-Bind/SAbDab mutation subsets) or wet-lab
+validation, and/or move to a pretrained protein encoder (ESM2) and a larger,
+more diverse antibody-antigen corpus. A separate branch can explore T03/T04.
+
 ## Reproduction
 
 ```bash
@@ -160,6 +208,10 @@ PYTHONPATH=. python -m alphabind_pipeline.finetune --epochs 20 --lr 1e-5 --batch
 PYTHONPATH=. python -m alphabind_pipeline.generate \
   --checkpoint /root/autodl-tmp/alphabind_pilot/pipeline_results/alphabind_finetuned.pt \
   --parents 2 --regions h3 --rounds 2 --min-delta 0.01
+
+# priority 6: teacher distillation
+PYTHONPATH=. python -m alphabind_pipeline.distill --prepare-only
+PYTHONPATH=. python -m alphabind_pipeline.distill --modes none,rank,mse
 ```
 
 Artifacts on the server:
@@ -174,4 +226,6 @@ Artifacts on the server:
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_anchor_metrics.json`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_consistency_metrics.json`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_h3h2_metrics.json`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/teacher_train_scores.csv`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/distill_metrics.json`
 - branch-run logs under `/root/autodl-tmp/seq2kd-alphabind/pipeline_results/`
