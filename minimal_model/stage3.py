@@ -71,6 +71,7 @@ class Stage3CandidateModel(nn.Module):
                  use_cdr: bool = False, use_chunk_attention: bool = False,
                  use_cross_attention: bool = False, cdr_query: str = "all",
                  esm_dim: int = 0, esm_projection_size: int = 64,
+                 esm_target_only: bool = False,
                  kmer_dim: int = 0, kmer_projection_size: int = 64):
         super().__init__()
         if use_cross_attention and not use_cdr:
@@ -83,6 +84,7 @@ class Stage3CandidateModel(nn.Module):
         self.cdr_query = cdr_query
         self.num_heads = num_heads
         self.esm_dim = int(esm_dim)
+        self.esm_target_only = bool(esm_target_only)
         self.kmer_dim = int(kmer_dim)
         self.encoder_vh = TransformerEncoder(
             tokenizer.vocab_size, tokenizer.max_vh_length,
@@ -105,7 +107,7 @@ class Stage3CandidateModel(nn.Module):
             if esm_dim else None)
         extra = ((hidden_size if use_cdr else 0)
                  + (hidden_size if self.cross_attn else 0)
-                 + (esm_projection_size if esm_dim else 0)
+                 + (0 if (esm_target_only and esm_dim) else (esm_projection_size if esm_dim else 0))
                  + (kmer_projection_size if kmer_dim else 0))
         self.fusion = nn.Sequential(
             nn.Linear(hidden_size * 4 + extra, fusion_size), nn.GELU(), nn.Dropout(dropout))
@@ -203,7 +205,8 @@ class Stage3CandidateModel(nn.Module):
         esm_embedding = None
         if self.esm_dim:
             esm_embedding = self.esm_projection(batch["esm_vh_embedding"].to(vh_pooled.dtype))
-            parts.append(esm_embedding.unsqueeze(1).expand(-1, candidates, -1))
+            if not self.esm_target_only:
+                parts.append(esm_embedding.unsqueeze(1).expand(-1, candidates, -1))
         kmer_embedding = None
         if self.kmer_dim:
             kmer_embedding = self.kmer_projection(batch["kmer_features"].to(vh_pooled.dtype))
@@ -380,6 +383,7 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
         use_cross_attention=config["use_cross_attention"],
         cdr_query=config["cdr_query"], esm_dim=config.get("esm_dim", 0),
         esm_projection_size=config.get("esm_projection_size", 64),
+        esm_target_only=config.get("esm_target_only", False),
         kmer_dim=config.get("kmer_dim", 0),
         kmer_projection_size=config.get("kmer_projection_size", 64)).to(device)
     amp_enabled = bool(config.get("amp", False) and device.type == "cuda")
