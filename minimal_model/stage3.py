@@ -231,6 +231,8 @@ class Stage3CandidateModel(nn.Module):
             "candidate_antigen_embedding": antigen,
             "chunk_weights": chunk_weights,
             "cdr_pooled": cdr_pooled,
+            "target_input": target_input,
+            "pair_representation": pair,
         }
 
 
