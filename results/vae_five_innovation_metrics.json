@@ -1,0 +1,132 @@
+{
+  "epochs": 50,
+  "vae_epochs": 50,
+  "vae_filter": {
+    "generated": 3267,
+    "esm_pass": 3267,
+    "quality": 3267,
+    "novel": 3141,
+    "teacher_accepted": 1718
+  },
+  "fused_base": {
+    "target_macro_f1_vh_only": 0.8154142240263157,
+    "target_macro_f1_ranking": 0.8230037511566082,
+    "positive_affinity_macro_f1": 0.6505235707363367,
+    "positive_log_kd_mae": 0.6352772057333339,
+    "combined_score_vh_only": 0.7111340059622792,
+    "combined_score_ranking": 0.7134108641013669
+  },
+  "fused_base_probe": {
+    "target_f1": 0.8154142240263157,
+    "affinity_f1": 0.6505235707363367,
+    "log_kd_mae": 0.6352772057333339,
+    "combined": 0.7111340059622792,
+    "target_acc": 0.8146067415730337,
+    "affinity_acc": 0.6615168539325843
+  },
+  "knn_k3": {
+    "target_f1": 0.8269858201169201,
+    "affinity_f1": 0.6297571602100128,
+    "log_kd_mae": 0.6760567965845065,
+    "combined": 0.7002008127062919,
+    "target_acc": 0.824438202247191,
+    "affinity_acc": 0.6362359550561798
+  },
+  "adaptive_gate": {
+    "target_f1": 0.8637785746289396,
+    "affinity_f1": 0.6513936224016509,
+    "log_kd_mae": 0.6254932048295269,
+    "combined": 0.7276600293840925,
+    "target_acc": 0.8595505617977528,
+    "affinity_acc": 0.6573033707865169
+  },
+  "multi_view_knn": {
+    "target_f1": 0.8199759999515832,
+    "affinity_f1": 0.6318084046018194,
+    "log_kd_mae": 0.6773589536278719,
+    "combined": 0.6985879247112341,
+    "target_acc": 0.8188202247191011,
+    "affinity_acc": 0.6390449438202247
+  },
+  "learned_metric_w0.25": {
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.6455932452472245,
+    "log_kd_mae": 0.6313670153045414,
+    "combined": 0.7651324757098675,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6530898876404494
+  },
+  "learned_metric_w0.5": {
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.647258179397701,
+    "log_kd_mae": 0.6310042859842754,
+    "combined": 0.7657786802935808,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6544943820224719
+  },
+  "learned_metric_w0.75": {
+    "target_f1": 0.9773068528803176,
+    "affinity_f1": 0.635737925956545,
+    "log_kd_mae": 0.624612202956776,
+    "combined": 0.7563931944314503,
+    "target_acc": 0.9747191011235955,
+    "affinity_acc": 0.6432584269662921
+  },
+  "confidence_distill_0.1": {
+    "target_f1": 0.819458717621868,
+    "affinity_f1": 0.6507147397073718,
+    "log_kd_mae": 0.6224300164518037,
+    "combined": 0.7146625213050748,
+    "target_acc": 0.8188202247191011,
+    "affinity_acc": 0.6615168539325843
+  },
+  "confidence_distill_0.2": {
+    "target_f1": 0.8248124628913913,
+    "affinity_f1": 0.6531885631559898,
+    "log_kd_mae": 0.6115987602526508,
+    "combined": 0.7190299529277999,
+    "target_acc": 0.824438202247191,
+    "affinity_acc": 0.6629213483146067
+  },
+  "confidence_distill_0.3": {
+    "target_f1": 0.8375203421751548,
+    "affinity_f1": 0.6579632675438596,
+    "log_kd_mae": 0.6023273049176943,
+    "combined": 0.7261359679323007,
+    "target_acc": 0.8356741573033708,
+    "affinity_acc": 0.6685393258426966
+  },
+  "task_specific_gate": {
+    "target_f1": 0.8458307497658035,
+    "affinity_f1": 0.6569294755034071,
+    "log_kd_mae": 0.6293294745803367,
+    "combined": 0.7235418833043746,
+    "target_acc": 0.8412921348314607,
+    "affinity_acc": 0.6671348314606742
+  },
+  "late_fusion_0.5": {
+    "target_f1": 0.8655101063691948,
+    "affinity_f1": 0.6503338680579811,
+    "log_kd_mae": 0.5959247103925555,
+    "combined": 0.7329830614123546,
+    "target_acc": 0.8595505617977528,
+    "affinity_acc": 0.6615168539325843
+  },
+  "late_fusion_0.75": {
+    "target_f1": 0.8458307497658035,
+    "affinity_f1": 0.6553664628470411,
+    "log_kd_mae": 0.6034244339132538,
+    "combined": 0.727528210991386,
+    "target_acc": 0.8412921348314607,
+    "affinity_acc": 0.6643258426966292
+  },
+  "best": {
+    "name": "learned_metric_w0.5",
+    "target_f1": 0.9988802251721122,
+    "affinity_f1": 0.647258179397701,
+    "log_kd_mae": 0.6310042859842754,
+    "combined": 0.7657786802935808,
+    "target_acc": 0.9985955056179775,
+    "affinity_acc": 0.6544943820224719
+  }
+}

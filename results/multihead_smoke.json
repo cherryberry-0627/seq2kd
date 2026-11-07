@@ -1,0 +1,71 @@
+{
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": false,
+    "lambda_target": 0.0,
+    "lambda_class": 1.0,
+    "lambda_abs": 1.0,
+    "lambda_rel": 0.3,
+    "temperature": 1.0,
+    "rel_warmup_epochs": 0,
+    "device_used": "cuda"
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.0942898261593585,
+      "target_loss": 1.5971532004608466,
+      "class_loss": 1.086948456400835,
+      "abs_loss": 0.5306948219875012,
+      "rank_loss": 1.588821797481071
+    }
+  ],
+  "target_macro_f1_vh_only": 0.0495049504950495,
+  "target_accuracy_vh_only": 0.1404494382022472,
+  "target_macro_f1_ranking": 0.07599544937428895,
+  "target_accuracy_ranking": 0.2345505617977528,
+  "positive_affinity_macro_f1": 0.3898836320070298,
+  "affinity_accuracy": 0.3960674157303371,
+  "positive_log_kd_mae": 0.9103644484574431,
+  "ranking_mrr": 0.4994616104868914,
+  "ranking_mean_rank": 2.6713483146067416,
+  "combined_score_vh_only": 0.3419969778709227,
+  "combined_score_ranking": 0.34994412753469456,
+  "per_class_f1_vh_only": {
+    "T01": 0.0,
+    "T02": 0.0,
+    "T03": 0.0,
+    "T04": 0.2475247524752475,
+    "T05": 0.0
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.0,
+    "T02": 0.3799772468714448,
+    "T03": 0.0,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.4334975369458128,
+    "strong": 0.36820083682008375,
+    "weak": 0.36795252225519287
+  },
+  "n_samples": 712
+}

@@ -1,0 +1,78 @@
+{
+  "tag": "epitope_smoke",
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 512,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": false,
+    "lambda_target": 0.3,
+    "lambda_class": 1.0,
+    "lambda_abs": 1.0,
+    "lambda_rel": 0.3,
+    "temperature": 1.0,
+    "use_cdr": true,
+    "use_chunk_attention": false,
+    "use_cross_attention": false,
+    "use_epitope_cross_attention": true,
+    "cdr_query": "all",
+    "epitope_max_tokens": 128,
+    "rel_warmup_epochs": 0,
+    "device_used": "cuda"
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.5141342090408685,
+      "target_loss": 1.4890572086598042,
+      "class_loss": 1.076565460617965,
+      "abs_loss": 0.5222938447752551,
+      "rank_loss": 1.5618589830012284
+    }
+  ],
+  "target_macro_f1_vh_only": 0.31220907510355056,
+  "target_accuracy_vh_only": 0.42696629213483145,
+  "target_macro_f1_ranking": 0.17598816590193145,
+  "target_accuracy_ranking": 0.32724719101123595,
+  "positive_affinity_macro_f1": 0.34623203889363047,
+  "affinity_accuracy": 0.39185393258426965,
+  "positive_log_kd_mae": 0.8803247150256017,
+  "ranking_mrr": 0.5721910112359551,
+  "ranking_mean_rank": 2.4213483146067416,
+  "combined_score_vh_only": 0.4107871110143555,
+  "combined_score_ranking": 0.3699208382538698,
+  "per_class_f1_vh_only": {
+    "T01": 0.5187032418952618,
+    "T02": 0.4843423799582463,
+    "T03": 0.4362606232294618,
+    "T04": 0.1217391304347826,
+    "T05": 0.0
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.08045977011494253,
+    "T02": 0.2971698113207547,
+    "T03": 0.50231124807396,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.5025773195876289,
+    "strong": 0.1440922190201729,
+    "weak": 0.39202657807308977
+  },
+  "n_samples": 712
+}

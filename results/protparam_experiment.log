@@ -1,0 +1,35 @@
+=== baseline: sequence Transformer ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.655234524547669,
+  "affinity_macro_f1": 0.5470152608052774,
+  "log_kd_mae": 0.7697254023575463,
+  "combined_score": 0.6033237532335771,
+  "n_samples": 712,
+  "variant": "baseline",
+  "seconds": 41.86533696949482,
+  "device": "cuda",
+  "final_train_loss": 1.8650622876098912
+}
+=== enhanced: Transformer + ProtParam (116 features) ===
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/tokenizer.py:75: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:254.)
+  "protparam_features": torch.tensor(
+{
+  "target_macro_f1": 0.6918791389849293,
+  "affinity_macro_f1": 0.560104014859312,
+  "log_kd_mae": 0.7456299765827492,
+  "combined_score": 0.6231149009942569,
+  "n_samples": 712,
+  "variant": "transformer_protparam",
+  "seconds": 40.159804252907634,
+  "device": "cuda",
+  "final_train_loss": 1.666601432789706
+}
+=== comparison ===
+target_macro_f1: baseline=0.655235 enhanced=0.691879 delta=+0.036645
+affinity_macro_f1: baseline=0.547015 enhanced=0.560104 delta=+0.013089
+log_kd_mae: baseline=0.769725 enhanced=0.745630 delta=-0.024095
+combined_score: baseline=0.603324 enhanced=0.623115 delta=+0.019791

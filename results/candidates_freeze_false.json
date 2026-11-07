@@ -1,0 +1,155 @@
+{
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 10,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": false,
+    "lambda_reg": 1.0,
+    "lambda_rank": 0.5,
+    "lambda_affinity": 1.0,
+    "lambda_vh": 0.5,
+    "temperature": 1.0,
+    "device_used": "cuda"
+  },
+  "antigen_library": {
+    "T01": {
+      "index": 0,
+      "length": 288
+    },
+    "T02": {
+      "index": 1,
+      "length": 290
+    },
+    "T03": {
+      "index": 2,
+      "length": 1273
+    },
+    "T04": {
+      "index": 3,
+      "length": 1210
+    },
+    "T05": {
+      "index": 4,
+      "length": 184
+    }
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 3.1806186555278146,
+      "positive_regression_loss": 0.5301813914759396,
+      "ranking_loss": 1.5897810101473329,
+      "positive_affinity_loss": 1.083692263884477,
+      "vh_only_loss": 1.5437089885422106
+    },
+    {
+      "epoch": 2,
+      "loss": 3.0362295384811917,
+      "positive_regression_loss": 0.5179559740171109,
+      "ranking_loss": 1.535668987180605,
+      "positive_affinity_loss": 1.0575722219920394,
+      "vh_only_loss": 1.385733689018602
+    },
+    {
+      "epoch": 3,
+      "loss": 2.8724602914736357,
+      "positive_regression_loss": 0.5108085503064581,
+      "ranking_loss": 1.4167136885259304,
+      "positive_affinity_loss": 1.027000833247969,
+      "vh_only_loss": 1.2525881201592144
+    },
+    {
+      "epoch": 4,
+      "loss": 2.7351083799843456,
+      "positive_regression_loss": 0.50788246834203,
+      "ranking_loss": 1.3114791230471543,
+      "positive_affinity_loss": 0.999901051675812,
+      "vh_only_loss": 1.1431706067037195
+    },
+    {
+      "epoch": 5,
+      "loss": 2.621409872792127,
+      "positive_regression_loss": 0.49611197893518677,
+      "ranking_loss": 1.2354779630818955,
+      "positive_affinity_loss": 0.9706709597191581,
+      "vh_only_loss": 1.073775884556477
+    },
+    {
+      "epoch": 6,
+      "loss": 2.500908718358065,
+      "positive_regression_loss": 0.47633331708281457,
+      "ranking_loss": 1.1623735489016926,
+      "positive_affinity_loss": 0.9398785672887395,
+      "vh_only_loss": 1.0070201045144187
+    },
+    {
+      "epoch": 7,
+      "loss": 2.403315570023265,
+      "positive_regression_loss": 0.4679307835509103,
+      "ranking_loss": 1.0967337564416308,
+      "positive_affinity_loss": 0.9150348137242638,
+      "vh_only_loss": 0.9439661930603842
+    },
+    {
+      "epoch": 8,
+      "loss": 2.325800070864926,
+      "positive_regression_loss": 0.4655128110266111,
+      "ranking_loss": 1.0293930767088941,
+      "positive_affinity_loss": 0.9000649842241667,
+      "vh_only_loss": 0.8910514797681164
+    },
+    {
+      "epoch": 9,
+      "loss": 2.2424744169811497,
+      "positive_regression_loss": 0.4516323444866898,
+      "ranking_loss": 0.9843848940849018,
+      "positive_affinity_loss": 0.8739391239848968,
+      "vh_only_loss": 0.8494210130024558
+    },
+    {
+      "epoch": 10,
+      "loss": 2.1400781264363773,
+      "positive_regression_loss": 0.44058467021243836,
+      "ranking_loss": 0.9114636981447931,
+      "positive_affinity_loss": 0.8466998068126801,
+      "vh_only_loss": 0.7941236082154854
+    }
+  ],
+  "target_macro_f1": 0.6074602762590786,
+  "target_accuracy": 0.6235955056179775,
+  "target_macro_f1_vh_only": 0.6137739950841559,
+  "target_accuracy_vh_only": 0.6292134831460674,
+  "ranking_mrr": 0.7678136704119851,
+  "positive_log_kd_mae": 0.8884273385999139,
+  "positive_affinity_macro_f1": 0.5383783565782689,
+  "per_class_f1": {
+    "T01": 0.6528189910979229,
+    "T02": 0.653968253968254,
+    "T03": 0.6244541484716157,
+    "T04": 0.4551724137931034,
+    "T05": 0.650887573964497
+  },
+  "per_class_f1_vh_only": {
+    "T01": 0.6687306501547987,
+    "T02": 0.6095890410958905,
+    "T03": 0.6624737945492662,
+    "T04": 0.4739884393063584,
+    "T05": 0.6540880503144654
+  },
+  "n_samples": 712
+}

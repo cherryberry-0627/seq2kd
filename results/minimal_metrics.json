@@ -1,0 +1,36 @@
+{
+  "config": {
+    "provider": "statistical",
+    "alpha": 10.0,
+    "affinity_class_from": "centroid",
+    "target_schema_id": "statistical:vh:v1",
+    "affinity_schema_id": "statistical:vh_antigen:v1"
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "target_task": {
+    "val_macro_f1": 0.3502697831420442,
+    "classes": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05"
+    ]
+  },
+  "affinity_task": {
+    "val_macro_f1": 0.3922673132825582,
+    "val_macro_f1_centroid": 0.3922673132825582,
+    "val_macro_f1_from_regression": 0.29063302747513275,
+    "val_mae_log10_kd": 0.8613322130852977,
+    "classes": [
+      "medium",
+      "strong",
+      "weak"
+    ]
+  },
+  "combined_score": {
+    "val": 0.4416413573015815,
+    "val_if_class_from_regression": 0.40606935726898263
+  }
+}

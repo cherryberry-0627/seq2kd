@@ -1,0 +1,51 @@
+===== chunk_bias =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6852887799697117,
+  "target_accuracy_vh_only": 0.6882022471910112,
+  "target_macro_f1_ranking": 0.6834540110596106,
+  "positive_affinity_macro_f1": 0.5757718472628964,
+  "positive_log_kd_mae": 0.733228038985387,
+  "ranking_mrr": 0.807631086142322,
+  "ranking_mean_rank": 1.5646067415730338,
+  "combined_score_vh_only": 0.6287918737104845,
+  "combined_score_ranking": 0.6282414430374542
+}
+tag: m6_chunk_bias_task2_true  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m6_chunk_bias_task2_true.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m6_chunk_bias_task2_true.csv
+===== pooled =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6288640322860732,
+  "target_accuracy_vh_only": 0.6460674157303371,
+  "target_macro_f1_ranking": 0.6138552935311049,
+  "positive_affinity_macro_f1": 0.5647194837305665,
+  "positive_log_kd_mae": 0.7392088502864407,
+  "ranking_mrr": 0.7779026217228464,
+  "ranking_mean_rank": 1.6671348314606742,
+  "combined_score_vh_only": 0.606949480191393,
+  "combined_score_ranking": 0.6024468585649025
+}
+tag: m6_pooled_task2_true  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m6_pooled_task2_true.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m6_pooled_task2_true.csv
+===== token_query =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6857522657620905,
+  "target_accuracy_vh_only": 0.6952247191011236,
+  "target_macro_f1_ranking": 0.6447131714543533,
+  "positive_affinity_macro_f1": 0.5645803717191495,
+  "positive_log_kd_mae": 0.7161103911901783,
+  "ranking_mrr": 0.7924625468164794,
+  "ranking_mean_rank": 1.6306179775280898,
+  "combined_score_vh_only": 0.6280094913720482,
+  "combined_score_ranking": 0.6156977630797271
+}
+tag: m6_token_query_task2_true  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m6_token_query_task2_true.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m6_token_query_task2_true.csv

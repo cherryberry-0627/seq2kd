@@ -1,0 +1,24 @@
+{
+  "target_task": {
+    "val_macro_f1": 0.3502697831420442,
+    "classes": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05"
+    ]
+  },
+  "affinity_task": {
+    "val_macro_f1": 0.3922673132825582,
+    "val_mae_log10_kd": 0.8613322130852977,
+    "classes": [
+      "medium",
+      "strong",
+      "weak"
+    ]
+  },
+  "combined_score": {
+    "val": 0.4416413573015815
+  }
+}

@@ -1,0 +1,85 @@
+===== m1_vh512 =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6315731349829711,
+  "target_accuracy_vh_only": 0.6404494382022472,
+  "target_macro_f1_ranking": 0.630264610347277,
+  "positive_affinity_macro_f1": 0.564493316573001,
+  "positive_log_kd_mae": 0.7445838475306793,
+  "ranking_mrr": 0.7788623595505617,
+  "ranking_mean_rank": 1.6839887640449438,
+  "combined_score_vh_only": 0.6067424279775727,
+  "combined_score_ranking": 0.6063498705868645
+}
+tag: m1_vh512  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m1_vh512.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m1_vh512.csv
+===== m2_cdr =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.684780918925404,
+  "target_accuracy_vh_only": 0.6980337078651685,
+  "target_macro_f1_ranking": 0.661265509301915,
+  "positive_affinity_macro_f1": 0.5675653082549634,
+  "positive_log_kd_mae": 0.7183053564610525,
+  "ranking_mrr": 0.7987359550561799,
+  "ranking_mean_rank": 1.6123595505617978,
+  "combined_score_vh_only": 0.6283786961861741,
+  "combined_score_ranking": 0.6213240732991274
+}
+tag: m2_cdr  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m2_cdr.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m2_cdr.csv
+===== m3_chunk =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6718941412604615,
+  "target_accuracy_vh_only": 0.6839887640449438,
+  "target_macro_f1_ranking": 0.666667108960033,
+  "positive_affinity_macro_f1": 0.5497294976940112,
+  "positive_log_kd_mae": 0.7150868604868679,
+  "ranking_mrr": 0.7992977528089888,
+  "ranking_mean_rank": 1.6292134831460674,
+  "combined_score_vh_only": 0.6188333659858405,
+  "combined_score_ranking": 0.6172652562957119
+}
+tag: m3_chunk  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m3_chunk.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m3_chunk.csv
+===== m4_cross_h3 =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6678078541635829,
+  "target_accuracy_vh_only": 0.672752808988764,
+  "target_macro_f1_ranking": 0.636893703561334,
+  "positive_affinity_macro_f1": 0.5582695080492611,
+  "positive_log_kd_mae": 0.7474595035074185,
+  "ranking_mrr": 0.7817181647940074,
+  "ranking_mean_rank": 1.6685393258426966,
+  "combined_score_vh_only": 0.614931270952518,
+  "combined_score_ranking": 0.6056570257718433
+}
+tag: m4_cross_h3  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m4_cross_h3.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m4_cross_h3.csv
+===== m4_cross_all =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.635203276840173,
+  "target_accuracy_vh_only": 0.6530898876404494,
+  "target_macro_f1_ranking": 0.6439523671937711,
+  "positive_affinity_macro_f1": 0.5522448565926826,
+  "positive_log_kd_mae": 0.7486397329480368,
+  "ranking_mrr": 0.7908239700374531,
+  "ranking_mean_rank": 1.6615168539325842,
+  "combined_score_vh_only": 0.6028347295935843,
+  "combined_score_ranking": 0.6054594566996638
+}
+tag: m4_cross_all  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m4_cross_all.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m4_cross_all.csv

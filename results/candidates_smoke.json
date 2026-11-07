@@ -1,0 +1,83 @@
+{
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": true,
+    "lambda_reg": 1.0,
+    "lambda_rank": 0.5,
+    "lambda_affinity": 1.0,
+    "lambda_vh": 0.5,
+    "temperature": 1.0,
+    "device_used": "cuda"
+  },
+  "antigen_library": {
+    "T01": {
+      "index": 0,
+      "length": 288
+    },
+    "T02": {
+      "index": 1,
+      "length": 290
+    },
+    "T03": {
+      "index": 2,
+      "length": 1273
+    },
+    "T04": {
+      "index": 3,
+      "length": 1210
+    },
+    "T05": {
+      "index": 4,
+      "length": 184
+    }
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 3.1664471820135427,
+      "positive_regression_loss": 0.5257303886073078,
+      "ranking_loss": 1.5835503347278392,
+      "positive_affinity_loss": 1.0788996525437418,
+      "vh_only_loss": 1.5400839185271218
+    }
+  ],
+  "target_macro_f1": 0.10706790860600272,
+  "target_accuracy": 0.22612359550561797,
+  "target_macro_f1_vh_only": 0.19931089366376362,
+  "target_accuracy_vh_only": 0.34269662921348315,
+  "ranking_mrr": 0.49688670411985014,
+  "positive_log_kd_mae": 0.8834918046962231,
+  "positive_affinity_macro_f1": 0.4152419313564131,
+  "per_class_f1": {
+    "T01": 0.349685534591195,
+    "T02": 0.18565400843881857,
+    "T03": 0.0,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "per_class_f1_vh_only": {
+    "T01": 0.3897911832946636,
+    "T02": 0.13333333333333333,
+    "T03": 0.4734299516908212,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "n_samples": 712
+}

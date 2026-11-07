@@ -1,0 +1,155 @@
+{
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 10,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": true,
+    "lambda_reg": 1.0,
+    "lambda_rank": 0.5,
+    "lambda_affinity": 1.0,
+    "lambda_vh": 0.5,
+    "temperature": 1.0,
+    "device_used": "cuda"
+  },
+  "antigen_library": {
+    "T01": {
+      "index": 0,
+      "length": 288
+    },
+    "T02": {
+      "index": 1,
+      "length": 290
+    },
+    "T03": {
+      "index": 2,
+      "length": 1273
+    },
+    "T04": {
+      "index": 3,
+      "length": 1210
+    },
+    "T05": {
+      "index": 4,
+      "length": 184
+    }
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 3.1664471820135427,
+      "positive_regression_loss": 0.5257303886073078,
+      "ranking_loss": 1.5835503347278392,
+      "positive_affinity_loss": 1.0788996525437418,
+      "vh_only_loss": 1.5400839185271218
+    },
+    {
+      "epoch": 2,
+      "loss": 3.106785680952281,
+      "positive_regression_loss": 0.5144191970168525,
+      "ranking_loss": 1.5711142702786514,
+      "positive_affinity_loss": 1.0591790972262434,
+      "vh_only_loss": 1.4952605156937127
+    },
+    {
+      "epoch": 3,
+      "loss": 3.089214335681081,
+      "positive_regression_loss": 0.513637788081863,
+      "ranking_loss": 1.5680192186422546,
+      "positive_affinity_loss": 1.0543365923270356,
+      "vh_only_loss": 1.4744606906502875
+    },
+    {
+      "epoch": 4,
+      "loss": 3.066314125218407,
+      "positive_regression_loss": 0.5096255088492696,
+      "ranking_loss": 1.5630081344072861,
+      "positive_affinity_loss": 1.0459359082380215,
+      "vh_only_loss": 1.4584972874523818
+    },
+    {
+      "epoch": 5,
+      "loss": 3.0543292529440627,
+      "positive_regression_loss": 0.5059150201607995,
+      "ranking_loss": 1.5612188107324299,
+      "positive_affinity_loss": 1.0444796639378637,
+      "vh_only_loss": 1.4466503150034624
+    },
+    {
+      "epoch": 6,
+      "loss": 3.045308676704501,
+      "positive_regression_loss": 0.5042370765855854,
+      "ranking_loss": 1.5613107209158417,
+      "positive_affinity_loss": 1.041172335607813,
+      "vh_only_loss": 1.4384877997191503
+    },
+    {
+      "epoch": 7,
+      "loss": 3.044827096854964,
+      "positive_regression_loss": 0.50323394915559,
+      "ranking_loss": 1.5615697277582983,
+      "positive_affinity_loss": 1.0420777728133397,
+      "vh_only_loss": 1.4374610278615714
+    },
+    {
+      "epoch": 8,
+      "loss": 3.0216374364372776,
+      "positive_regression_loss": 0.49894605999482206,
+      "ranking_loss": 1.5533591882266191,
+      "positive_affinity_loss": 1.032984174803646,
+      "vh_only_loss": 1.4260552129765514
+    },
+    {
+      "epoch": 9,
+      "loss": 3.005728055434366,
+      "positive_regression_loss": 0.49368562265233595,
+      "ranking_loss": 1.5499932326392085,
+      "positive_affinity_loss": 1.0256452674877168,
+      "vh_only_loss": 1.42280112988878
+    },
+    {
+      "epoch": 10,
+      "loss": 3.009684223188783,
+      "positive_regression_loss": 0.4965142578371663,
+      "ranking_loss": 1.5514171087738275,
+      "positive_affinity_loss": 1.030577934274722,
+      "vh_only_loss": 1.41376695817489
+    }
+  ],
+  "target_macro_f1": 0.09545093336807645,
+  "target_accuracy": 0.23595505617977527,
+  "target_macro_f1_vh_only": 0.28657460872339613,
+  "target_accuracy_vh_only": 0.38342696629213485,
+  "ranking_mrr": 0.5111189138576779,
+  "positive_log_kd_mae": 0.8550298021173844,
+  "positive_affinity_macro_f1": 0.4497412896169212,
+  "per_class_f1": {
+    "T01": 0.06741573033707865,
+    "T02": 0.37396449704142015,
+    "T03": 0.035874439461883414,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "per_class_f1_vh_only": {
+    "T01": 0.45728643216080406,
+    "T02": 0.31884057971014496,
+    "T03": 0.4761904761904762,
+    "T04": 0.18055555555555555,
+    "T05": 0.0
+  },
+  "n_samples": 712
+}

@@ -1,0 +1,40 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "val_affinity_macro_f1": 0.32522223587726845,
+  "val_log_kd_mae": 0.38493989740065676,
+  "test_affinity_macro_f1": 0.3253277355888951,
+  "test_log_kd_mae": 0.40318743464135387,
+  "val_constant_macro_f1": 0.32522223587726845,
+  "test_constant_macro_f1": 0.3253277355888951,
+  "val_f1_from_regression": 0.32522223587726845,
+  "test_f1_from_regression": 0.3253277355888951,
+  "final_train_loss": 0.2214252491458985,
+  "device": "cuda"
+}
+splits: {'train': {'n_rows': 38954, 'n_unique_vh': 31, 'n_unique_antigen': 1688, 'affinity_distribution': {'strong': 4, 'medium': 1829, 'weak': 37121}, 'target_distribution': {'CoV2_RBD': 38923, 'CoV1_RBD': 31}}, 'val': {'n_rows': 8335, 'n_unique_vh': 31, 'n_unique_antigen': 362, 'affinity_distribution': {'weak': 7939, 'medium': 395, 'strong': 1}, 'target_distribution': {'MERS_RBD': 30, 'CoV2_RBD': 8305}}, 'test': {'n_rows': 8293, 'n_unique_vh': 31, 'n_unique_antigen': 364, 'affinity_distribution': {'medium': 388, 'strong': 1, 'weak': 7904}, 'target_distribution': {'CoV2_RBD': 8293}}}
+per_class_f1 val: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9756667076318053}
+per_class_f1 test: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9759832067666853}
+per_class_f1_from_regression val: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9756667076318053}
+per_class_f1_from_regression test: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9759832067666853}
+out: results/ym0005_seed268_noweight.json
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "val_affinity_macro_f1": 0.49000609588098776,
+  "val_log_kd_mae": 0.3939912844110583,
+  "test_affinity_macro_f1": 0.4849876043067595,
+  "test_log_kd_mae": 0.4126590117063768,
+  "val_constant_macro_f1": 0.32522223587726845,
+  "test_constant_macro_f1": 0.3253277355888951,
+  "val_f1_from_regression": 0.32522223587726845,
+  "test_f1_from_regression": 0.3253277355888951,
+  "final_train_loss": 0.4043935979453728,
+  "device": "cuda"
+}
+splits: {'train': {'n_rows': 38954, 'n_unique_vh': 31, 'n_unique_antigen': 1688, 'affinity_distribution': {'strong': 4, 'medium': 1829, 'weak': 37121}, 'target_distribution': {'CoV2_RBD': 38923, 'CoV1_RBD': 31}}, 'val': {'n_rows': 8335, 'n_unique_vh': 31, 'n_unique_antigen': 362, 'affinity_distribution': {'weak': 7939, 'medium': 395, 'strong': 1}, 'target_distribution': {'MERS_RBD': 30, 'CoV2_RBD': 8305}}, 'test': {'n_rows': 8293, 'n_unique_vh': 31, 'n_unique_antigen': 364, 'affinity_distribution': {'medium': 388, 'strong': 1, 'weak': 7904}, 'target_distribution': {'CoV2_RBD': 8293}}}
+per_class_f1 val: {'medium': 0.5123966942148761, 'strong': 0.0, 'weak': 0.9576215934280872}
+per_class_f1 test: {'medium': 0.49925705794947994, 'strong': 0.0, 'weak': 0.9557057549707986}
+per_class_f1_from_regression val: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9756667076318053}
+per_class_f1_from_regression test: {'medium': 0.0, 'strong': 0.0, 'weak': 0.9759832067666853}
+out: results/ym0005_seed268_capped.json

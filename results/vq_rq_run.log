@@ -1,0 +1,41 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+/root/autodl-tmp/seq2kd/minimal_model/stage3.py:362: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
+=== baseline ===
+{
+  "target_macro_f1_vh_only": 0.7373687970598083,
+  "target_accuracy_vh_only": 0.7401685393258427,
+  "target_macro_f1_ranking": 0.7462390931221085,
+  "target_accuracy_ranking": 0.75,
+  "positive_affinity_macro_f1": 0.5955575226309597,
+  "affinity_accuracy": 0.6067415730337079,
+  "positive_log_kd_mae": 0.6941701177064908,
+  "ranking_mrr": 0.8491338951310862,
+  "ranking_mean_rank": 1.4536516853932584,
+  "combined_score_vh_only": 0.6581760014401424,
+  "combined_score_ranking": 0.6608370902588325,
+  "per_class_f1_vh_only": {
+    "T01": 0.7837837837837837,
+    "T02": 0.7756410256410257,
+    "T03": 0.7259615384615385,
+    "T04": 0.6486486486486486,
+    "T05": 0.7528089887640449
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.7906976744186046,
+    "T02": 0.7836990595611286,
+    "T03": 0.7338129496402878,
+    "T04": 0.6729857819905214,
+    "T05": 0.7500000000000001
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.5222929936305732,
+    "strong": 0.7030716723549489,
+    "weak": 0.5613079019073569
+  },
+  "n_samples": 712,
+  "final_train_loss": 0.45928255405792273,
+  "final_train_epoch": 50
+}
+{"n_regions": 3267, "max_length": 49}

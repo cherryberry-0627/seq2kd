@@ -1,0 +1,95 @@
+===== experiment A =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.15083862727303282,
+  "target_accuracy": 0.21910112359550563,
+  "ranking_mrr": 0.47347846441947566,
+  "ranking_mean_rank": 2.9058988764044944,
+  "positive_log_kd_mae": 0.8085318864305312,
+  "violation_rate": null,
+  "absolute_pairs_auc": null,
+  "absolute_pairs_auprc": null,
+  "reliable_top1": null,
+  "absolute_mask_coverage": 0.0,
+  "frac_pos_above_floor": null
+}
+experiment: A  pseudo_negatives: False  device: cuda
+metrics -> results/censored_A.json
+interpretability -> results/interpretability_A.csv
+===== experiment B =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.20141960308357074,
+  "target_accuracy": 0.2598314606741573,
+  "ranking_mrr": 0.5190308988764044,
+  "ranking_mean_rank": 2.61938202247191,
+  "positive_log_kd_mae": 0.8080670362670566,
+  "violation_rate": null,
+  "absolute_pairs_auc": null,
+  "absolute_pairs_auprc": null,
+  "reliable_top1": null,
+  "absolute_mask_coverage": 0.0,
+  "frac_pos_above_floor": null
+}
+experiment: B  pseudo_negatives: False  device: cuda
+metrics -> results/censored_B.json
+interpretability -> results/interpretability_B.csv
+===== experiment C =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.4640299874499302,
+  "target_accuracy": 0.4691011235955056,
+  "ranking_mrr": 0.6712780898876405,
+  "ranking_mean_rank": 2.042134831460674,
+  "positive_log_kd_mae": 1.0083317291173648,
+  "violation_rate": 0.8711376404494382,
+  "absolute_pairs_auc": 0.7326401855881016,
+  "absolute_pairs_auprc": 0.41157485415086226,
+  "reliable_top1": 0.48265895953757226,
+  "absolute_mask_coverage": 0.9719101123595506,
+  "frac_pos_above_floor": 0.028089887640449437
+}
+experiment: C  pseudo_negatives: True  device: cuda
+metrics -> results/censored_C.json
+interpretability -> results/interpretability_C.csv
+===== experiment D =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.6025538150890284,
+  "target_accuracy": 0.6278089887640449,
+  "ranking_mrr": 0.7719569288389513,
+  "ranking_mean_rank": 1.7092696629213484,
+  "positive_log_kd_mae": 0.9782059399073086,
+  "violation_rate": 0.6787219101123596,
+  "absolute_pairs_auc": 0.8473247480171844,
+  "absolute_pairs_auprc": 0.6329290022031874,
+  "reliable_top1": 0.6573529411764706,
+  "absolute_mask_coverage": 0.9550561797752809,
+  "frac_pos_above_floor": 0.04073033707865169
+}
+experiment: D  pseudo_negatives: True  device: cuda
+metrics -> results/censored_D.json
+interpretability -> results/interpretability_D.csv
+===== experiment E =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.46975529700492735,
+  "target_accuracy": 0.46769662921348315,
+  "ranking_mrr": 0.6706460674157303,
+  "ranking_mean_rank": 2.0168539325842696,
+  "positive_log_kd_mae": 0.9485218770497804,
+  "violation_rate": 0.9118679775280899,
+  "absolute_pairs_auc": 0.7514154359104943,
+  "absolute_pairs_auprc": 0.4302461062065948,
+  "reliable_top1": 0.471671388101983,
+  "absolute_mask_coverage": 0.9915730337078652,
+  "frac_pos_above_floor": 0.007022471910112359
+}
+experiment: E  pseudo_negatives: True  device: cuda
+metrics -> results/censored_E.json
+interpretability -> results/interpretability_E.csv

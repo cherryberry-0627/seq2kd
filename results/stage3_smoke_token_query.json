@@ -1,0 +1,81 @@
+{
+  "tag": "smoke_token_query",
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 512,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": false,
+    "lambda_target": 0.3,
+    "lambda_class": 1.0,
+    "lambda_abs": 1.0,
+    "lambda_rel": 0.3,
+    "temperature": 1.0,
+    "use_cdr": true,
+    "use_chunk_attention": false,
+    "use_cross_attention": false,
+    "use_epitope_cross_attention": false,
+    "epitope_variant": "token_query",
+    "epitope_scope": "task2_true",
+    "cdr_query_max_tokens": 64,
+    "cdr_query": "h3",
+    "epitope_max_tokens": 128,
+    "rel_warmup_epochs": 0,
+    "device_used": "cuda"
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.5254251140035957,
+      "target_loss": 1.4977456486836733,
+      "class_loss": 1.0767376881764523,
+      "abs_loss": 0.5277085252399026,
+      "rank_loss": 1.5721838525419582
+    }
+  ],
+  "target_macro_f1_vh_only": 0.3685501328367361,
+  "target_accuracy_vh_only": 0.45365168539325845,
+  "target_macro_f1_ranking": 0.16737175792507206,
+  "target_accuracy_ranking": 0.33146067415730335,
+  "positive_affinity_macro_f1": 0.4233193406676201,
+  "affinity_accuracy": 0.4396067415730337,
+  "positive_log_kd_mae": 0.8835161339618812,
+  "ranking_mrr": 0.5624297752808989,
+  "ranking_mean_rank": 2.4873595505617976,
+  "combined_score_vh_only": 0.4541114856413586,
+  "combined_score_ranking": 0.3937579731678594,
+  "per_class_f1_vh_only": {
+    "T01": 0.5229885057471264,
+    "T02": 0.4843049327354261,
+    "T03": 0.4878048780487805,
+    "T04": 0.3216783216783217,
+    "T05": 0.025974025974025976
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.0,
+    "T02": 0.37,
+    "T03": 0.4668587896253603,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.4985590778097983,
+    "strong": 0.3755656108597285,
+    "weak": 0.39583333333333337
+  },
+  "n_samples": 712
+}

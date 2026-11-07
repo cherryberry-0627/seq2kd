@@ -1,0 +1,106 @@
+{
+  "experiment": "C",
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "freeze_encoder": false,
+    "lambda_pos": 1.0,
+    "lambda_rel": 0.3,
+    "lambda_censor": 0.1,
+    "lambda_class": 1.0,
+    "lambda_abs_rank": 0.0,
+    "lambda_vh": 0.0,
+    "margin": 0.1,
+    "margin_abs": 0.1,
+    "temperature": 1.0,
+    "rel_warmup_epochs": 3,
+    "device_used": "cuda"
+  },
+  "assumption": {
+    "pseudo_negatives": true,
+    "evidence": "assumption",
+    "assumed_detection_limit_nm": 1000.0,
+    "z_floor": 3.0,
+    "margin": 0.1,
+    "margin_abs": 0.1,
+    "temperature": 1.0,
+    "rel_warmup_epochs": 3,
+    "lambda_pos": 1.0,
+    "lambda_rel": 0.3,
+    "lambda_censor": 0.1,
+    "lambda_class": 1.0,
+    "lambda_abs_rank": 0.0,
+    "lambda_vh": 0.0
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "train_pair_counts": {
+    "right_censored_nonbinding": 13332,
+    "measured_exact": 3333
+  },
+  "val_pair_counts": {
+    "measured_exact": 712,
+    "right_censored_nonbinding": 2848
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.3007389258022175,
+      "loss_pos": 0.6550888167892602,
+      "loss_rel": 1.5944656935891266,
+      "loss_censor": 4.003144385755294,
+      "loss_class": 1.0858890787102315,
+      "loss_abs_rank": 0.0,
+      "loss_vh": 1.6057887522265104
+    }
+  ],
+  "target_macro_f1": 0.07599544937428895,
+  "target_accuracy": 0.2345505617977528,
+  "target_macro_f1_vh_only": 0.07428121602878884,
+  "ranking_mrr": 0.4994616104868914,
+  "ranking_mean_rank": 2.6713483146067416,
+  "positive_log_kd_mae": 1.1371023469783288,
+  "violation_rate": 1.0,
+  "absolute_pairs_auc": 0.5835183471941674,
+  "absolute_pairs_auprc": 0.24790366926264748,
+  "reliable_top1": 0.2345505617977528,
+  "absolute_mask_coverage": 1.0,
+  "relative_mask_coverage": 1.0,
+  "frac_pos_above_floor": 0.0,
+  "n_samples": 712,
+  "n_positive_pairs": 712,
+  "n_negative_pairs": 2848,
+  "n_unknown_pairs": 0,
+  "per_class_f1": {
+    "T01": 0.0,
+    "T02": 0.3799772468714448,
+    "T03": 0.0,
+    "T04": 0.0,
+    "T05": 0.0
+  },
+  "mae_by_affinity": {
+    "strong": 1.860469784604686,
+    "medium": 0.5571791723971533,
+    "weak": 0.6045661718049917
+  },
+  "mae_by_z": {
+    "z<=0": 1.860469784604686,
+    "0<z<=1": 0.5571791723971533,
+    "1<z<=2": 0.41702376287989984,
+    "z>2": 1.131471034975488
+  }
+}

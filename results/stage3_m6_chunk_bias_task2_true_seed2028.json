@@ -1,0 +1,153 @@
+{
+  "tag": "m6_chunk_bias_task2_true_seed2028",
+  "config": {
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "max_vh_length": 512,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "batch_size": 16,
+    "epochs": 10,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2028,
+    "device": "auto",
+    "freeze_encoder": false,
+    "lambda_target": 0.3,
+    "lambda_class": 1.0,
+    "lambda_abs": 1.0,
+    "lambda_rel": 0.3,
+    "temperature": 1.0,
+    "use_cdr": true,
+    "use_chunk_attention": false,
+    "use_cross_attention": false,
+    "use_epitope_cross_attention": false,
+    "epitope_variant": "chunk_bias",
+    "epitope_scope": "task2_true",
+    "cdr_query_max_tokens": 64,
+    "cdr_query": "all",
+    "epitope_max_tokens": 128,
+    "rel_warmup_epochs": 0,
+    "device_used": "cuda"
+  },
+  "n_train": 3333,
+  "n_val": 712,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.551403427639059,
+      "target_loss": 1.4899057811922474,
+      "class_loss": 1.0964394102860526,
+      "abs_loss": 0.5340488637634629,
+      "rank_loss": 1.57981129905822
+    },
+    {
+      "epoch": 2,
+      "loss": 2.4584677931499166,
+      "target_loss": 1.2955137661652918,
+      "class_loss": 1.081016425824616,
+      "abs_loss": 0.5252914578527292,
+      "rank_loss": 1.545019141196346
+    },
+    {
+      "epoch": 3,
+      "loss": 2.318187173121762,
+      "target_loss": 1.1420973026462764,
+      "class_loss": 1.0491128898117588,
+      "abs_loss": 0.5034966146377268,
+      "rank_loss": 1.4098281666497872
+    },
+    {
+      "epoch": 4,
+      "loss": 2.153743192164561,
+      "target_loss": 1.0249807916530216,
+      "class_loss": 1.0037484113568484,
+      "abs_loss": 0.4736885783052144,
+      "rank_loss": 1.229373133150336
+    },
+    {
+      "epoch": 5,
+      "loss": 1.9816182914740181,
+      "target_loss": 0.909479999771141,
+      "class_loss": 0.9497531478268372,
+      "abs_loss": 0.4391458453294789,
+      "rank_loss": 1.0662509071336936
+    },
+    {
+      "epoch": 6,
+      "loss": 1.873703427530072,
+      "target_loss": 0.8404474652657593,
+      "class_loss": 0.9159787074424396,
+      "abs_loss": 0.4131104235369416,
+      "rank_loss": 0.9749334661713098
+    },
+    {
+      "epoch": 7,
+      "loss": 1.7863835745161087,
+      "target_loss": 0.7736878739063567,
+      "class_loss": 0.884720535668889,
+      "abs_loss": 0.40025705598046607,
+      "rank_loss": 0.8976653509318131
+    },
+    {
+      "epoch": 8,
+      "loss": 1.6702870269848926,
+      "target_loss": 0.6969192955288628,
+      "class_loss": 0.8424773867105958,
+      "abs_loss": 0.380799243936945,
+      "rank_loss": 0.7931152948058477
+    },
+    {
+      "epoch": 9,
+      "loss": 1.5984788001781822,
+      "target_loss": 0.6619248655584171,
+      "class_loss": 0.8076519728279171,
+      "abs_loss": 0.36492428180873127,
+      "rank_loss": 0.7577502067976802
+    },
+    {
+      "epoch": 10,
+      "loss": 1.5384781713282565,
+      "target_loss": 0.6095066212549104,
+      "class_loss": 0.7843142558764381,
+      "abs_loss": 0.3581238184968094,
+      "rank_loss": 0.7106269811174729
+    }
+  ],
+  "target_macro_f1_vh_only": 0.7029947421774887,
+  "target_accuracy_vh_only": 0.7064606741573034,
+  "target_macro_f1_ranking": 0.676853486789198,
+  "target_accuracy_ranking": 0.6783707865168539,
+  "positive_affinity_macro_f1": 0.5247239475500345,
+  "affinity_accuracy": 0.547752808988764,
+  "positive_log_kd_mae": 0.7314773258542375,
+  "ranking_mrr": 0.8069288389513108,
+  "ranking_mean_rank": 1.571629213483146,
+  "combined_score_vh_only": 0.616543272271267,
+  "combined_score_ranking": 0.6087008956547798,
+  "per_class_f1_vh_only": {
+    "T01": 0.7383512544802867,
+    "T02": 0.7257142857142856,
+    "T03": 0.7099767981438516,
+    "T04": 0.5784313725490196,
+    "T05": 0.7625
+  },
+  "per_class_f1_ranking": {
+    "T01": 0.717391304347826,
+    "T02": 0.7071823204419889,
+    "T03": 0.6781326781326781,
+    "T04": 0.5161290322580645,
+    "T05": 0.765432098765432
+  },
+  "per_class_affinity_f1": {
+    "medium": 0.4238095238095238,
+    "strong": 0.6666666666666665,
+    "weak": 0.4836956521739131
+  },
+  "n_samples": 712
+}

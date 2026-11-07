@@ -1,0 +1,13 @@
+{
+  "method": "no_attention_knn",
+  "k": 25,
+  "n_train": 3333,
+  "n_val": 712,
+  "target_macro_f1": 0.6668600440228649,
+  "target_accuracy": 0.6769662921348315,
+  "affinity_macro_f1": 0.5866496199709287,
+  "affinity_accuracy": 0.5926966292134831,
+  "log_kd_mae": 0.7561475649218312,
+  "combined_score": 0.623059556335364,
+  "device": "cuda"
+}

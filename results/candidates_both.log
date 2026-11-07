@@ -1,0 +1,26 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.09545093336807645,
+  "target_accuracy": 0.23595505617977527,
+  "target_macro_f1_vh_only": 0.28657460872339613,
+  "ranking_mrr": 0.5111189138576779,
+  "positive_log_kd_mae": 0.8550298021173844,
+  "positive_affinity_macro_f1": 0.4497412896169212
+}
+freeze_encoder: True  device: cuda
+per_class_f1: {'T01': 0.06741573033707865, 'T02': 0.37396449704142015, 'T03': 0.035874439461883414, 'T04': 0.0, 'T05': 0.0}
+out: results/candidates_freeze_true.json
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1": 0.6074602762590786,
+  "target_accuracy": 0.6235955056179775,
+  "target_macro_f1_vh_only": 0.6137739950841559,
+  "ranking_mrr": 0.7678136704119851,
+  "positive_log_kd_mae": 0.8884273385999139,
+  "positive_affinity_macro_f1": 0.5383783565782689
+}
+freeze_encoder: False  device: cuda
+per_class_f1: {'T01': 0.6528189910979229, 'T02': 0.653968253968254, 'T03': 0.6244541484716157, 'T04': 0.4551724137931034, 'T05': 0.650887573964497}
+out: results/candidates_freeze_false.json

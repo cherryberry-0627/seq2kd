@@ -1,0 +1,52 @@
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 200/4045
+annotated 400/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 600/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 800/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 1000/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 1200/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 1400/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 1600/4045
+annotated 1800/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 2000/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 2200/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 2400/4045
+annotated 2600/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 2800/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 3000/4045
+annotated 3200/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 3400/4045
+annotated 3600/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 3800/4045
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+Limiting hmmer search to species ['human', 'mouse'] was requested but hits did not achieve a high enough bitscore. Reverting to using any species
+annotated 4000/4045
+annotated 4045/4045
+status: {'ok': 3958, 'partial': 17, 'no_hit': 55, 'not_heavy': 15}
+h1: n=3958 len min/median/max=4/8.0/14
+h2: n=3958 len min/median/max=3/8.0/22
+h3: n=3958 len min/median/max=1/13.0/38
+written: data/cdr_annotations.csv (4045 rows)

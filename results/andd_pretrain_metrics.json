@@ -1,0 +1,101 @@
+{
+  "csv": "/root/autodl-tmp/seq2kd_external/ANDD/andd_vh_single_antigen.csv",
+  "config": {
+    "epochs": 10,
+    "batch_size": 32,
+    "max_vh_length": 192,
+    "antigen_chunk_length": 192,
+    "antigen_overlap": 32,
+    "hidden_size": 64,
+    "num_heads": 4,
+    "ff_size": 128,
+    "num_layers": 2,
+    "fusion_size": 96,
+    "dropout": 0.1,
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "grad_clip": 1.0,
+    "seed": 2026,
+    "device": "auto",
+    "device_used": "cuda"
+  },
+  "class_weight_mode": "capped",
+  "class_weights": {
+    "medium": 5.038235294117647,
+    "strong": 5.420886075949367,
+    "weak": 1.0
+  },
+  "n_rows": 2369,
+  "n_unique_vh": 2189,
+  "n_unique_antigen": 1146,
+  "n_unique_target": 736,
+  "affinity_distribution": {
+    "weak": 1713,
+    "strong": 316,
+    "medium": 340
+  },
+  "final_train_loss": 1.1933753373956015,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.0452935477760383,
+      "affinity_loss": 1.1028434500607724,
+      "regression_loss": 0.9424500820184116
+    },
+    {
+      "epoch": 2,
+      "loss": 1.8425350344196156,
+      "affinity_loss": 1.0372508858366323,
+      "regression_loss": 0.8052841534137525
+    },
+    {
+      "epoch": 3,
+      "loss": 1.6716208604882667,
+      "affinity_loss": 0.9616883333446911,
+      "regression_loss": 0.7099325154692173
+    },
+    {
+      "epoch": 4,
+      "loss": 1.5678078485169256,
+      "affinity_loss": 0.9125626260039674,
+      "regression_loss": 0.6552452225082406
+    },
+    {
+      "epoch": 5,
+      "loss": 1.504300935226133,
+      "affinity_loss": 0.8782581736036069,
+      "regression_loss": 0.6260427632422173
+    },
+    {
+      "epoch": 6,
+      "loss": 1.4383024320968751,
+      "affinity_loss": 0.8418396448928025,
+      "regression_loss": 0.5964627839919184
+    },
+    {
+      "epoch": 7,
+      "loss": 1.3682199391497494,
+      "affinity_loss": 0.8016655254635744,
+      "regression_loss": 0.5665544084607045
+    },
+    {
+      "epoch": 8,
+      "loss": 1.2934169409998664,
+      "affinity_loss": 0.7708644434941776,
+      "regression_loss": 0.5225524918635015
+    },
+    {
+      "epoch": 9,
+      "loss": 1.2663026059061326,
+      "affinity_loss": 0.7522159788164724,
+      "regression_loss": 0.5140866276950788
+    },
+    {
+      "epoch": 10,
+      "loss": 1.1933753373956015,
+      "affinity_loss": 0.6960211674741372,
+      "regression_loss": 0.49735416832182255
+    }
+  ],
+  "checkpoint": "results/andd_pretrain.pt"
+}

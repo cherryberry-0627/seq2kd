@@ -1,4 +1,6 @@
-results/
+results/*.pt
+results/*.pth
+results/*.pid
 __pycache__/
 *.pyc
 .venv-anarci/

@@ -1,0 +1,16 @@
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "mlp_combined_score_ranking": 0.6173178663456962,
+  "mlp_target_f1_ranking": 0.6770661099969904,
+  "mlp_affinity_f1": 0.554687265174605,
+  "mlp_log_kd_mae": 0.7425286255115005,
+  "knn_combined_score_ranking": 0.44947933534444845,
+  "knn_target_f1_ranking": 0.09526146180831217,
+  "knn_affinity_f1": 0.5615711252653928,
+  "knn_log_kd_mae": 0.7179942688053293,
+  "knn_mrr": 0.51687734082397,
+  "k": 25,
+  "device": "cuda",
+  "out": "/root/autodl-tmp/seq2kd/results/stage3_knn_m5_h3_seed2026.json"
+}

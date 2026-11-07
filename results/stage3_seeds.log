@@ -1,0 +1,68 @@
+===== m1 seed 2027 =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.5844989510547778,
+  "target_accuracy_vh_only": 0.6193820224719101,
+  "target_macro_f1_ranking": 0.59806644203265,
+  "positive_affinity_macro_f1": 0.5221499728452302,
+  "positive_log_kd_mae": 0.775126379206467,
+  "ranking_mrr": 0.7628277153558051,
+  "ranking_mean_rank": 1.7570224719101124,
+  "combined_score_vh_only": 0.5724550594511322,
+  "combined_score_ranking": 0.5765253067444939
+}
+tag: m1_vh512_seed2027  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m1_vh512_seed2027.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m1_vh512_seed2027.csv
+===== m2 seed 2027 =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6612758752137429,
+  "target_accuracy_vh_only": 0.6671348314606742,
+  "target_macro_f1_ranking": 0.6267236195623862,
+  "positive_affinity_macro_f1": 0.5557005045197471,
+  "positive_log_kd_mae": 0.7277713901354179,
+  "ranking_mrr": 0.7816479400749063,
+  "ranking_mean_rank": 1.646067415730337,
+  "combined_score_vh_only": 0.6155179458723361,
+  "combined_score_ranking": 0.6051522691769291
+}
+tag: m2_cdr_seed2027  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m2_cdr_seed2027.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m2_cdr_seed2027.csv
+===== m1 seed 2028 =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.6121351763351482,
+  "target_accuracy_vh_only": 0.6179775280898876,
+  "target_macro_f1_ranking": 0.6023900844297696,
+  "positive_affinity_macro_f1": 0.5099217581360588,
+  "positive_log_kd_mae": 0.7832853964683638,
+  "ranking_mrr": 0.7591994382022473,
+  "ranking_mean_rank": 1.7331460674157304,
+  "combined_score_vh_only": 0.5750382238662014,
+  "combined_score_ranking": 0.5721146962945878
+}
+tag: m1_vh512_seed2028  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m1_vh512_seed2028.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m1_vh512_seed2028.csv
+===== m2 seed 2028 =====
+/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  warnings.warn(
+{
+  "target_macro_f1_vh_only": 0.7006321768226174,
+  "target_accuracy_vh_only": 0.6910112359550562,
+  "target_macro_f1_ranking": 0.6878882346799131,
+  "positive_affinity_macro_f1": 0.5721487369342899,
+  "positive_log_kd_mae": 0.7181295240914033,
+  "ranking_mrr": 0.8077949438202247,
+  "ranking_mean_rank": 1.5646067415730338,
+  "combined_score_vh_only": 0.6347690442577911,
+  "combined_score_ranking": 0.6309458616149798
+}
+tag: m2_cdr_seed2028  device: cuda
+metrics -> /root/autodl-tmp/seq2kd/results/stage3_m2_cdr_seed2028.json
+interpretability -> /root/autodl-tmp/seq2kd/results/stage3_interpretability_m2_cdr_seed2028.csv
