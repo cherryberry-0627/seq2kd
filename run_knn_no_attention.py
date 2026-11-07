@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from collections import Counter
 from pathlib import Path
@@ -95,6 +96,7 @@ def main() -> dict:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument("--k", type=int, default=25)
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--submission", type=Path, default=None)
     args = parser.parse_args()
 
     train = read_dataset(args.root / "data" / "train.csv")
@@ -124,6 +126,7 @@ def main() -> dict:
     log_kd_pred = knn_regress(x_val2, x_train2, y_log_kd, args.k, device)
     log_kd_true = np.array([s["log_kd_nm"] for s in val], dtype=float)
     error = mae(log_kd_true, log_kd_pred)
+    sample_ids = [s["sample_id"] for s in val]
 
     score = 0.30 * target_f1 + 0.35 * affinity_f1 + 0.35 * max(0.0, 1.0 - error / 2.0)
     result = {
@@ -143,8 +146,21 @@ def main() -> dict:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")
+
+    submission_path = args.submission or (
+        args.root / "results" / "submission_knn_no_attention.csv")
+    submission_path.parent.mkdir(parents=True, exist_ok=True)
+    with submission_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["sample_id", "target_id",
+                         "predicted_affinity_class", "predicted_log_kd_nm"])
+        for sample_id, target, affinity, z in zip(
+                sample_ids, target_pred, affinity_pred, log_kd_pred):
+            writer.writerow([sample_id, str(target), str(affinity), f"{float(z):.4f}"])
+
     print(json.dumps(result, ensure_ascii=False, indent=2))
     print(f"out: {out_path}")
+    print(f"submission: {submission_path}")
     return result
 
 
