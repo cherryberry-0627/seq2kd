@@ -70,7 +70,8 @@ class Stage3CandidateModel(nn.Module):
                  fusion_size: int = 96, dropout: float = 0.1,
                  use_cdr: bool = False, use_chunk_attention: bool = False,
                  use_cross_attention: bool = False, cdr_query: str = "all",
-                 esm_dim: int = 0, esm_projection_size: int = 64):
+                 esm_dim: int = 0, esm_projection_size: int = 64,
+                 kmer_dim: int = 0, kmer_projection_size: int = 64):
         super().__init__()
         if use_cross_attention and not use_cdr:
             raise ValueError("cross-attention requires CDR features")
@@ -82,6 +83,7 @@ class Stage3CandidateModel(nn.Module):
         self.cdr_query = cdr_query
         self.num_heads = num_heads
         self.esm_dim = int(esm_dim)
+        self.kmer_dim = int(kmer_dim)
         self.encoder_vh = TransformerEncoder(
             tokenizer.vocab_size, tokenizer.max_vh_length,
             hidden_size, num_heads, ff_size, num_layers, dropout)
@@ -95,16 +97,21 @@ class Stage3CandidateModel(nn.Module):
         ) if (use_cdr and use_cross_attention) else None
         self.cross_norm = nn.LayerNorm(hidden_size) if self.cross_attn is not None else None
 
+        self.kmer_projection = (nn.Sequential(
+            nn.Linear(kmer_dim, kmer_projection_size), nn.LayerNorm(kmer_projection_size), nn.GELU())
+            if kmer_dim else None)
         self.esm_projection = (nn.Sequential(
             nn.Linear(esm_dim, esm_projection_size), nn.LayerNorm(esm_projection_size), nn.GELU())
             if esm_dim else None)
         extra = ((hidden_size if use_cdr else 0)
                  + (hidden_size if self.cross_attn else 0)
-                 + (esm_projection_size if esm_dim else 0))
+                 + (esm_projection_size if esm_dim else 0)
+                 + (kmer_projection_size if kmer_dim else 0))
         self.fusion = nn.Sequential(
             nn.Linear(hidden_size * 4 + extra, fusion_size), nn.GELU(), nn.Dropout(dropout))
         self.target_head = nn.Linear(hidden_size + (hidden_size if use_cdr else 0)
-                                     + (esm_projection_size if esm_dim else 0), 5)
+                                     + (esm_projection_size if esm_dim else 0)
+                                     + (kmer_projection_size if kmer_dim else 0), 5)
         self.affinity_head = nn.Linear(fusion_size, 3)
         self.z_head = nn.Linear(fusion_size, 1)
         self.rank_head = nn.Linear(fusion_size, 1)
@@ -197,6 +204,10 @@ class Stage3CandidateModel(nn.Module):
         if self.esm_dim:
             esm_embedding = self.esm_projection(batch["esm_vh_embedding"].to(vh_pooled.dtype))
             parts.append(esm_embedding.unsqueeze(1).expand(-1, candidates, -1))
+        kmer_embedding = None
+        if self.kmer_dim:
+            kmer_embedding = self.kmer_projection(batch["kmer_features"].to(vh_pooled.dtype))
+            parts.append(kmer_embedding.unsqueeze(1).expand(-1, candidates, -1))
         if self.use_cdr:
             parts.append(cdr_global.unsqueeze(1).expand(-1, candidates, -1))
         if cross is not None:
@@ -208,6 +219,8 @@ class Stage3CandidateModel(nn.Module):
             target_parts.append(cdr_global)
         if esm_embedding is not None:
             target_parts.append(esm_embedding)
+        if kmer_embedding is not None:
+            target_parts.append(kmer_embedding)
         target_input = torch.cat(target_parts, dim=-1)
         return {
             "target_logits": self.target_head(target_input),
@@ -245,6 +258,9 @@ def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
         "affinity_labels": torch.tensor(
             [AFFINITY_TO_ID[s["affinity_class"]] for s in samples], dtype=torch.long),
         "sample_ids": sample_ids,
+        "kmer_features": torch.as_tensor(
+            np.stack([s["kmer_features"] for s in samples]), dtype=torch.float32)
+            if all("kmer_features" in s for s in samples) else None,
         "esm_vh_embedding": torch.as_tensor(
             np.stack([s["esm_vh_embedding"] for s in samples]), dtype=torch.float32)
             if all("esm_vh_embedding" in s for s in samples) else None,
@@ -254,6 +270,12 @@ def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
             [float(s.get("target_sample_weight", s.get("sample_weight", 1.0))) for s in samples], dtype=torch.float32),
         "affinity_sample_weight": torch.tensor(
             [float(s.get("affinity_sample_weight", s.get("sample_weight", 1.0))) for s in samples], dtype=torch.float32),
+        "knn_target_soft": torch.as_tensor(np.stack([s["knn_target_soft"] for s in samples]), dtype=torch.float32)
+            if all("knn_target_soft" in s for s in samples) else None,
+        "knn_affinity_soft": torch.as_tensor(np.stack([s["knn_affinity_soft"] for s in samples]), dtype=torch.float32)
+            if all("knn_affinity_soft" in s for s in samples) else None,
+        "knn_log_kd": torch.as_tensor([s["knn_log_kd"] for s in samples], dtype=torch.float32)
+            if all("knn_log_kd" in s for s in samples) else None,
     }
     if any("latent_vh_embedding" in s for s in samples):
         hidden = next(s["latent_vh_embedding"] for s in samples if "latent_vh_embedding" in s)
@@ -306,8 +328,22 @@ def compute_loss(output, batch, config, epoch=0):
              + float(config["lambda_class"]) * class_loss
              + float(config["lambda_abs"]) * abs_loss
              + lambda_rel * rank_loss)
+    distill_target = target_loss * 0.0
+    distill_affinity = class_loss * 0.0
+    distill_regression = abs_loss * 0.0
+    if batch.get("knn_target_soft") is not None:
+        soft_t = batch["knn_target_soft"].to(output["target_logits"].device)
+        soft_a = batch["knn_affinity_soft"].to(output["target_logits"].device)
+        soft_z = batch["knn_log_kd"].to(output["target_logits"].device)
+        temp = float(config.get("knn_temperature", 1.0))
+        distill_target = F.kl_div(F.log_softmax(output["rank_score"] / temp, -1), soft_t, reduction="batchmean") * temp ** 2
+        distill_affinity = F.kl_div(F.log_softmax(output["affinity_logits"][rows, index] / temp, -1), soft_a, reduction="batchmean") * temp ** 2
+        distill_regression = F.smooth_l1_loss(output["log_kd_pred"][rows, index], soft_z)
+        total = total + float(config.get("lambda_knn_target", 0.0)) * distill_target + float(config.get("lambda_knn_affinity", 0.0)) * distill_affinity + float(config.get("lambda_knn_regression", 0.0)) * distill_regression
     return {"loss": total, "target_loss": target_loss, "class_loss": class_loss,
-            "abs_loss": abs_loss, "rank_loss": rank_loss, "lambda_rel_now": lambda_rel}
+            "abs_loss": abs_loss, "rank_loss": rank_loss, "distill_target": distill_target,
+            "distill_affinity": distill_affinity, "distill_regression": distill_regression,
+            "lambda_rel_now": lambda_rel}
 
 
 @dataclass
@@ -343,7 +379,9 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
         use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
         use_cross_attention=config["use_cross_attention"],
         cdr_query=config["cdr_query"], esm_dim=config.get("esm_dim", 0),
-        esm_projection_size=config.get("esm_projection_size", 64)).to(device)
+        esm_projection_size=config.get("esm_projection_size", 64),
+        kmer_dim=config.get("kmer_dim", 0),
+        kmer_projection_size=config.get("kmer_projection_size", 64)).to(device)
     amp_enabled = bool(config.get("amp", False) and device.type == "cuda")
     amp_dtype = torch.float16 if config.get("amp_dtype", "float16") == "float16" else torch.bfloat16
     if config.get("tf32", True) and torch.cuda.is_available():
