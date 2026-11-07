@@ -84,6 +84,44 @@ low-weight pseudo-samples improves the main model on held-out val.
 - The fine-tuning result is on 1,821 pairs; overfitting is possible even with
   early stopping.
 
+## Pseudo-sample A/B (real vs real + AlphaBind candidates)
+
+10 train parents, CDR-H3, 2 greedy rounds -> 4,680 candidates. Top 100 per
+parent after the delta/score filters and VH dedup -> **806 pseudo samples**.
+Pseudo weights: target 0.25, affinity 0.10, regression 0.10.
+
+3 seeds, mean ± std:
+
+| arm | target F1 | affinity F1 | log-Kd MAE | S |
+|---|---:|---:|---:|---:|
+| real only | 0.6452 ± 0.0127 | **0.5312 ± 0.0061** | **0.7671 ± 0.0035** | **0.5953 ± 0.0055** |
+| real + pseudo | **0.6559 ± 0.0167** | 0.5128 ± 0.0066 | 0.7917 ± 0.0113 | 0.5877 ± 0.0072 |
+
+- target F1: +0.011 (within seed noise)
+- affinity F1: **-0.019** (about 3σ)
+- MAE: **+0.025** (about 7σ)
+- S: **-0.008**
+
+Per-target affinity F1 in seed 2026 was lower for every target, including
+T03/T04 that have no pseudo-samples (shared-encoder interference).
+
+**Conclusion:** adding the AlphaBind-generated pseudo-samples as-is does not
+help; it degrades affinity classification and log-Kd regression. The slight
+target-F1 gain is not enough to offset it. The fine-tuned AlphaBind is a useful
+held-out scorer, but its generated samples are not reliable pseudo-labels for
+the main model.
+
+Possible follow-ups:
+
+- use pseudo-samples **target-only** (target weight 0.25, affinity/regression 0)
+  to test whether the target-F1 gain is real without hurting task 2;
+- use AlphaBind as a **teacher for distillation on real samples** rather than
+  as extra labeled data;
+- tighten the candidate filter (large delta, uncertainty, ESM2 likelihood) and
+  lower the affinity/regression weight further;
+- validate generated improvements with SKEMPI/AB-Bind or wet-lab data before
+  treating them as labels.
+
 ## Reproduction
 
 ```bash
@@ -99,4 +137,6 @@ Artifacts on the server:
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/zero_shot_n100.{csv,json}`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/alphabind_finetuned.{pt,json}`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates.csv`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates_10p.csv`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_metrics.json`
 - branch-run logs under `/root/autodl-tmp/seq2kd-alphabind/pipeline_results/`
