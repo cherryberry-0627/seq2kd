@@ -124,6 +124,13 @@ def add_weights(batch, samples, device):
     return batch
 
 
+def _weighted_mean(loss: torch.Tensor, weights: torch.Tensor) -> torch.Tensor:
+    total = weights.sum()
+    if float(total.detach().cpu()) <= 0.0:
+        return loss.sum() * 0.0
+    return (loss * weights).sum() / total
+
+
 def weighted_loss(output, batch):
     target = torch.tensor([TARGET_TO_ID[x] for x in batch["target_labels"]],
                           device=output["target_logits"].device)
@@ -136,9 +143,9 @@ def weighted_loss(output, batch):
     w_t = batch["target_weights"]
     w_a = batch["affinity_weights"]
     w_r = batch["regression_weights"]
-    total = ((target_loss * w_t).sum() / w_t.sum()
-             + (affinity_loss * w_a).sum() / w_a.sum()
-             + (regression_loss * w_r).sum() / w_r.sum())
+    total = (_weighted_mean(target_loss, w_t)
+             + _weighted_mean(affinity_loss, w_a)
+             + _weighted_mean(regression_loss, w_r))
     return total, target_loss.mean(), affinity_loss.mean(), regression_loss.mean()
 
 
