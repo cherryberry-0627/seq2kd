@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, "/root/autodl-tmp/seq2kd-alphabind")
+sys.path.append("/root/autodl-tmp/seq2kd-alphabind")
 from alphabind_pipeline.embedding import ESM2Embedder  # noqa: E402
 from alphabind_pipeline.model import load_alphabind, score_pairs  # noqa: E402
 
