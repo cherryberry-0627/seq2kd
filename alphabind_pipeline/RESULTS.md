@@ -122,6 +122,36 @@ Possible follow-ups:
 - validate generated improvements with SKEMPI/AB-Bind or wet-lab data before
   treating them as labels.
 
+## Correction experiments (priority order)
+
+All experiments use 3 seeds and the same real-data baseline within each run.
+Absolute values vary between runs because of GPU non-determinism; compare the
+within-run real vs real+pseudo difference.
+
+| fix | real S | real+pseudo S | ΔS | note |
+|---|---:|---:|---:|---|
+| hard class CE (original) | 0.5953 | 0.5877 | **-0.0075** | affinity -0.019, MAE +0.025 |
+| **regression-only, absolute labels** | 0.5898 | 0.5936 | **+0.0038** | target +0.018, affinity +0.001, MAE +0.012; best variant |
+| delta-anchored regression-only | 0.5968 | 0.5785 | **-0.0183** | target -0.033, affinity -0.013 |
+| parent same-class consistency + regression-only | 0.6061 | 0.5922 | **-0.0139** | 407 pseudo; affinity -0.027 |
+| H3+H2 diversity + regression-only | 0.5943 | 0.5924 | **-0.0019** | 994 pseudo; MAE -0.007, others neutral |
+
+Conclusions:
+
+- Turning off the pseudo affinity CE is the only change that removes the large
+  affinity drop; target F1 improves and S is slightly positive, but the gain is
+  within seed noise.
+- Delta anchoring and parent-class consistency do not help; they reduce the
+  useful pseudo set or shift the regression targets.
+- Expanding from H3 to H3+H2 is neutral.
+- The bottleneck is the pseudo labels themselves: teacher predictions without
+  measured mutant Kd, only 10 parents/CDR mutations, in-sample generation, and
+  no uncertainty/calibration tied to experimental truth.
+- Remaining priorities: uncertainty/distance weighting and teacher distillation.
+  Distillation on real samples (soft teacher targets) is more promising than
+  adding more pseudo-labelled data. External mutation data (SKEMPI/AB-Bind) or
+  wet-lab validation is required before treating generated Kd as real.
+
 ## Reproduction
 
 ```bash
@@ -138,5 +168,10 @@ Artifacts on the server:
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/alphabind_finetuned.{pt,json}`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates.csv`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates_10p.csv`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/generated_candidates_10p_h3h2.csv`
 - `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_metrics.json`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_regonly_metrics.json`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_anchor_metrics.json`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_consistency_metrics.json`
+- `/root/autodl-tmp/alphabind_pilot/pipeline_results/pseudo_train_h3h2_metrics.json`
 - branch-run logs under `/root/autodl-tmp/seq2kd-alphabind/pipeline_results/`
