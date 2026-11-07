@@ -30,6 +30,22 @@ from .transformer import TransformerEncoder
 TARGET_IDS = ("T01", "T02", "T03", "T04", "T05")
 AFFINITY_IDS = ("medium", "strong", "weak")
 
+
+class _GradientReversal(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x, alpha):
+        ctx.alpha = float(alpha)
+        return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        return -ctx.alpha * grad_output, None
+
+
+def gradient_reverse(x, alpha=1.0):
+    """Identity forward, negated gradient backward (GRL)."""
+    return _GradientReversal.apply(x, alpha)
+
 DEFAULT_CONFIG = {
     "hidden_size": 64,
     "num_heads": 4,
@@ -57,6 +73,10 @@ DEFAULT_CONFIG = {
     "use_chunk_attention": False,
     "use_cross_attention": False,
     "cdr_query": "all",
+    "use_adv": False,
+    "adv_hidden": 64,
+    "adv_alpha": 1.0,
+    "lambda_adv": 0.0,
 }
 
 
@@ -65,7 +85,9 @@ class Stage3CandidateModel(nn.Module):
                  num_heads: int = 4, ff_size: int = 128, num_layers: int = 2,
                  fusion_size: int = 96, dropout: float = 0.1,
                  use_cdr: bool = False, use_chunk_attention: bool = False,
-                 use_cross_attention: bool = False, cdr_query: str = "all"):
+                 use_cross_attention: bool = False, cdr_query: str = "all",
+                 use_adv: bool = False, adv_hidden: int = 64,
+                 adv_alpha: float = 1.0):
         super().__init__()
         if use_cross_attention and not use_cdr:
             raise ValueError("cross-attention requires CDR features")
@@ -96,6 +118,11 @@ class Stage3CandidateModel(nn.Module):
         self.affinity_head = nn.Linear(fusion_size, 3)
         self.z_head = nn.Linear(fusion_size, 1)
         self.rank_head = nn.Linear(fusion_size, 1)
+        self.use_adv = use_adv
+        self.adv_alpha = adv_alpha
+        self.adv_head = (nn.Sequential(
+            nn.Linear(fusion_size, adv_hidden), nn.GELU(), nn.Linear(adv_hidden, 5))
+            if use_adv else None)
 
     @staticmethod
     def _masked_mean(tokens: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
@@ -183,6 +210,10 @@ class Stage3CandidateModel(nn.Module):
             parts.append(cross)
         pair = self.fusion(torch.cat(parts, dim=-1))
 
+        adv_logits = None
+        if self.adv_head is not None:
+            adv_logits = self.adv_head(gradient_reverse(pair, self.adv_alpha))
+
         target_input = torch.cat([vh_pooled, cdr_global], dim=-1) if self.use_cdr else vh_pooled
         return {
             "target_logits": self.target_head(target_input),
@@ -193,6 +224,7 @@ class Stage3CandidateModel(nn.Module):
             "candidate_antigen_embedding": antigen,
             "chunk_weights": chunk_weights,
             "cdr_pooled": cdr_pooled,
+            "adv_logits": adv_logits,
         }
 
 
@@ -244,8 +276,16 @@ def compute_loss(output, batch, config, epoch=0):
              + float(config["lambda_class"]) * class_loss
              + float(config["lambda_abs"]) * abs_loss
              + lambda_rel * rank_loss)
+    adv_loss = target_loss * 0.0
+    if output.get("adv_logits") is not None:
+        adv_logits = output["adv_logits"]
+        bsz, candidates, n_classes = adv_logits.shape
+        adv_labels = torch.arange(candidates, device=adv_logits.device).unsqueeze(0).expand(bsz, -1).reshape(-1)
+        adv_loss = F.cross_entropy(adv_logits.reshape(-1, n_classes), adv_labels)
+        total = total + float(config.get("lambda_adv", 0.0)) * adv_loss
     return {"loss": total, "target_loss": target_loss, "class_loss": class_loss,
-            "abs_loss": abs_loss, "rank_loss": rank_loss, "lambda_rel_now": lambda_rel}
+            "abs_loss": abs_loss, "rank_loss": rank_loss, "adv_loss": adv_loss,
+            "lambda_rel_now": lambda_rel}
 
 
 @dataclass
@@ -280,7 +320,9 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
         fusion_size=config["fusion_size"], dropout=config["dropout"],
         use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
         use_cross_attention=config["use_cross_attention"],
-        cdr_query=config["cdr_query"]).to(device)
+        cdr_query=config["cdr_query"],
+        use_adv=config["use_adv"], adv_hidden=config["adv_hidden"],
+        adv_alpha=config["adv_alpha"]).to(device)
     if config["freeze_encoder"]:
         for parameter in (list(model.encoder_vh.parameters())
                           + list(model.encoder_antigen.parameters())):
@@ -294,7 +336,8 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
         if config["freeze_encoder"]:
             model.encoder_vh.eval()
             model.encoder_antigen.eval()
-        totals = {key: 0.0 for key in ("loss", "target_loss", "class_loss", "abs_loss", "rank_loss")}
+        totals = {key: 0.0 for key in ("loss", "target_loss", "class_loss", "abs_loss",
+                                       "rank_loss", "adv_loss")}
         total_n = 0
         for indices in batch_slices(len(train_dataset), config["batch_size"], True,
                                     config["seed"] + epoch):
