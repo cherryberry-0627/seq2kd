@@ -69,6 +69,30 @@ Route-1 CDR mutation augmentation, 3,280 generated mutations, 20 Stage3 epochs:
   remain noisy. A stricter, higher-confidence subset / lower weight could be a
   follow-up, but is not yet tested.
 
+### `grl/`
+
+Counterfactual-pair GRL on Stage3: each VH is paired with all five fixed
+antigens (one true + four counterfactual); an adversarial head on the pair
+fusion predicts the candidate/target identity, with a gradient reversal layer.
+20 epochs, seed 2026.
+
+| arm | target F1 | affinity F1 | MAE | S |
+|---|---:|---:|---:|---:|
+| baseline (no adv) | **0.7129** | **0.5852** | **0.6997** | **0.6462** |
+| GRL λ=0.1 | 0.7126 | 0.5691 | 0.7169 | 0.6375 |
+| GRL λ=0.5 | 0.6702 | 0.5668 | 0.7062 | 0.6258 |
+
+- Adversarial loss stays at ≈1.56 (ln 5 = 1.609), so the head cannot classify
+  the candidate identity: the GRL is effective at removing antigen identity from
+  the fusion representation.
+- However, affinity F1 and MAE get worse; forcing antigen-identity invariance
+  removes useful signal. At λ=0.1 target F1 is unchanged; at λ=0.5 it drops
+  because the GRL gradient also reaches the shared VH encoder.
+- Conclusion: this form of counterfactual GRL does not improve the model.
+  Antigen identity is informative for affinity. Lower λ / a separate projection
+  branch / counterfactual ranking instead of identity invariance would be the
+  next variants to test.
+
 ## Key numbers
 
 ### AlphaBind
