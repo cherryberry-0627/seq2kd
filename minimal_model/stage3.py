@@ -57,6 +57,10 @@ DEFAULT_CONFIG = {
     "use_chunk_attention": False,
     "use_cross_attention": False,
     "cdr_query": "all",
+    "amp": False,
+    "amp_dtype": "float16",
+    "tf32": True,
+    "compile": False,
 }
 
 
@@ -65,7 +69,8 @@ class Stage3CandidateModel(nn.Module):
                  num_heads: int = 4, ff_size: int = 128, num_layers: int = 2,
                  fusion_size: int = 96, dropout: float = 0.1,
                  use_cdr: bool = False, use_chunk_attention: bool = False,
-                 use_cross_attention: bool = False, cdr_query: str = "all"):
+                 use_cross_attention: bool = False, cdr_query: str = "all",
+                 esm_dim: int = 0, esm_projection_size: int = 64):
         super().__init__()
         if use_cross_attention and not use_cdr:
             raise ValueError("cross-attention requires CDR features")
@@ -76,6 +81,7 @@ class Stage3CandidateModel(nn.Module):
         self.use_chunk_attention = use_chunk_attention
         self.cdr_query = cdr_query
         self.num_heads = num_heads
+        self.esm_dim = int(esm_dim)
         self.encoder_vh = TransformerEncoder(
             tokenizer.vocab_size, tokenizer.max_vh_length,
             hidden_size, num_heads, ff_size, num_layers, dropout)
@@ -89,10 +95,16 @@ class Stage3CandidateModel(nn.Module):
         ) if (use_cdr and use_cross_attention) else None
         self.cross_norm = nn.LayerNorm(hidden_size) if self.cross_attn is not None else None
 
-        extra = (hidden_size if use_cdr else 0) + (hidden_size if self.cross_attn else 0)
+        self.esm_projection = (nn.Sequential(
+            nn.Linear(esm_dim, esm_projection_size), nn.LayerNorm(esm_projection_size), nn.GELU())
+            if esm_dim else None)
+        extra = ((hidden_size if use_cdr else 0)
+                 + (hidden_size if self.cross_attn else 0)
+                 + (esm_projection_size if esm_dim else 0))
         self.fusion = nn.Sequential(
             nn.Linear(hidden_size * 4 + extra, fusion_size), nn.GELU(), nn.Dropout(dropout))
-        self.target_head = nn.Linear(hidden_size + (hidden_size if use_cdr else 0), 5)
+        self.target_head = nn.Linear(hidden_size + (hidden_size if use_cdr else 0)
+                                     + (esm_projection_size if esm_dim else 0), 5)
         self.affinity_head = nn.Linear(fusion_size, 3)
         self.z_head = nn.Linear(fusion_size, 1)
         self.rank_head = nn.Linear(fusion_size, 1)
@@ -124,8 +136,12 @@ class Stage3CandidateModel(nn.Module):
         vh_mask = batch["vh_attention_mask"]
         if vh_tokens is None:
             vh_tokens = self._encode_vh(batch)
+        encoded_vh_pooled = self.encoder_vh.pool_tokens(vh_tokens, vh_mask)
         if vh_pooled is None:
-            vh_pooled = self.encoder_vh.pool_tokens(vh_tokens, vh_mask)
+            vh_pooled = encoded_vh_pooled
+        elif "latent_vh_mask" in batch:
+            latent_mask = batch["latent_vh_mask"].unsqueeze(-1)
+            vh_pooled = torch.where(latent_mask, vh_pooled, encoded_vh_pooled)
         if antigen_chunk_emb is None:
             antigen_chunk_emb = self._encode_antigen_chunks(batch)
         chunk_mask = batch["antigen_chunk_mask"]
@@ -177,13 +193,22 @@ class Stage3CandidateModel(nn.Module):
 
         vh_expanded = vh_pooled.unsqueeze(1).expand(-1, candidates, -1)
         parts = [vh_expanded, antigen, (vh_expanded - antigen).abs(), vh_expanded * antigen]
+        esm_embedding = None
+        if self.esm_dim:
+            esm_embedding = self.esm_projection(batch["esm_vh_embedding"].to(vh_pooled.dtype))
+            parts.append(esm_embedding.unsqueeze(1).expand(-1, candidates, -1))
         if self.use_cdr:
             parts.append(cdr_global.unsqueeze(1).expand(-1, candidates, -1))
         if cross is not None:
             parts.append(cross)
         pair = self.fusion(torch.cat(parts, dim=-1))
 
-        target_input = torch.cat([vh_pooled, cdr_global], dim=-1) if self.use_cdr else vh_pooled
+        target_parts = [vh_pooled]
+        if self.use_cdr:
+            target_parts.append(cdr_global)
+        if esm_embedding is not None:
+            target_parts.append(esm_embedding)
+        target_input = torch.cat(target_parts, dim=-1)
         return {
             "target_logits": self.target_head(target_input),
             "affinity_logits": self.affinity_head(pair),
@@ -220,7 +245,23 @@ def collate_stage3(samples, tokenizer: AminoAcidTokenizer, antigen_tokens,
         "affinity_labels": torch.tensor(
             [AFFINITY_TO_ID[s["affinity_class"]] for s in samples], dtype=torch.long),
         "sample_ids": sample_ids,
+        "esm_vh_embedding": torch.as_tensor(
+            np.stack([s["esm_vh_embedding"] for s in samples]), dtype=torch.float32)
+            if all("esm_vh_embedding" in s for s in samples) else None,
+        "sample_weight": torch.tensor(
+            [float(s.get("sample_weight", 1.0)) for s in samples], dtype=torch.float32),
+        "target_sample_weight": torch.tensor(
+            [float(s.get("target_sample_weight", s.get("sample_weight", 1.0))) for s in samples], dtype=torch.float32),
+        "affinity_sample_weight": torch.tensor(
+            [float(s.get("affinity_sample_weight", s.get("sample_weight", 1.0))) for s in samples], dtype=torch.float32),
     }
+    if any("latent_vh_embedding" in s for s in samples):
+        hidden = next(s["latent_vh_embedding"] for s in samples if "latent_vh_embedding" in s)
+        zero = np.zeros_like(hidden)
+        batch["latent_vh_embedding"] = torch.as_tensor(
+            np.stack([s.get("latent_vh_embedding", zero) for s in samples]), dtype=torch.float32)
+        batch["latent_vh_mask"] = torch.tensor(
+            ["latent_vh_embedding" in s for s in samples], dtype=torch.bool)
     if device is not None:
         batch = {key: value.to(device) if isinstance(value, torch.Tensor) else value
                  for key, value in batch.items()}
@@ -240,6 +281,27 @@ def compute_loss(output, batch, config, epoch=0):
     if warmup > 0:
         lambda_rel *= min((epoch + 1) / warmup, 1.0)
     rank_loss = F.cross_entropy(output["rank_score"] / float(config["temperature"]), index)
+    target_weight = batch.get("target_sample_weight")
+    affinity_weight = batch.get("affinity_sample_weight")
+    if target_weight is not None or affinity_weight is not None:
+        target_weight = (target_weight if target_weight is not None else
+                         torch.ones_like(index, dtype=target_loss.dtype)).to(target_loss.device)
+        affinity_weight = (affinity_weight if affinity_weight is not None else
+                           torch.ones_like(index, dtype=target_loss.dtype)).to(target_loss.device)
+        target_each = F.cross_entropy(output["target_logits"], index, reduction="none")
+        class_each = F.cross_entropy(output["affinity_logits"][rows, index], batch["affinity_labels"], reduction="none")
+        abs_each = F.huber_loss(output["log_kd_pred"][rows, index], batch["log_kd"], delta=1.0, reduction="none")
+        rank_each = F.cross_entropy(output["rank_score"] / float(config["temperature"]), index, reduction="none")
+        target_denom = target_weight.sum()
+        affinity_denom = affinity_weight.sum()
+        target_loss = ((target_each * target_weight).sum() / target_denom
+                       if target_denom > 1e-6 else target_each.sum() * 0.0)
+        rank_loss = ((rank_each * target_weight).sum() / target_denom
+                     if target_denom > 1e-6 else rank_each.sum() * 0.0)
+        class_loss = ((class_each * affinity_weight).sum() / affinity_denom
+                      if affinity_denom > 1e-6 else class_each.sum() * 0.0)
+        abs_loss = ((abs_each * affinity_weight).sum() / affinity_denom
+                    if affinity_denom > 1e-6 else abs_each.sum() * 0.0)
     total = (float(config["lambda_target"]) * target_loss
              + float(config["lambda_class"]) * class_loss
              + float(config["lambda_abs"]) * abs_loss
@@ -280,7 +342,16 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
         fusion_size=config["fusion_size"], dropout=config["dropout"],
         use_cdr=config["use_cdr"], use_chunk_attention=config["use_chunk_attention"],
         use_cross_attention=config["use_cross_attention"],
-        cdr_query=config["cdr_query"]).to(device)
+        cdr_query=config["cdr_query"], esm_dim=config.get("esm_dim", 0),
+        esm_projection_size=config.get("esm_projection_size", 64)).to(device)
+    amp_enabled = bool(config.get("amp", False) and device.type == "cuda")
+    amp_dtype = torch.float16 if config.get("amp_dtype", "float16") == "float16" else torch.bfloat16
+    if config.get("tf32", True) and torch.cuda.is_available():
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.set_float32_matmul_precision("high")
+    if config["compile"] and hasattr(torch, "compile"):
+        model = torch.compile(model, mode="reduce-overhead")
     if config["freeze_encoder"]:
         for parameter in (list(model.encoder_vh.parameters())
                           + list(model.encoder_antigen.parameters())):
@@ -288,6 +359,7 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
     optimizer = torch.optim.AdamW(
         [p for p in model.parameters() if p.requires_grad],
         lr=config["learning_rate"], weight_decay=config["weight_decay"])
+    scaler = torch.cuda.amp.GradScaler(enabled=amp_enabled)
     history = []
     for epoch in range(config["epochs"]):
         model.train()
@@ -300,14 +372,19 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
                                     config["seed"] + epoch):
             samples = [train_dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, tokenizer, antigen_tokens,
-                                   library["target_to_index"], cdr_table, device)
+                                   library["target_to_index"], cdr_table, device=device)
             optimizer.zero_grad(set_to_none=True)
-            output = model.forward_candidates(batch)
-            losses = compute_loss(output, batch, config, epoch)
-            losses["loss"].backward()
+            amp_enabled = bool(config.get("amp", False) and device.type == "cuda")
+            amp_dtype = torch.float16 if config.get("amp_dtype", "float16") == "float16" else torch.bfloat16
+            with torch.autocast(device_type=device.type, dtype=amp_dtype, enabled=amp_enabled):
+                output = model.forward_candidates(batch, vh_pooled=batch.get("latent_vh_embedding"))
+                losses = compute_loss(output, batch, config, epoch)
+            scaler.scale(losses["loss"]).backward()
             if config["grad_clip"] is not None:
+                scaler.unscale_(optimizer)
                 nn.utils.clip_grad_norm_(model.parameters(), config["grad_clip"])
-            optimizer.step()
+            scaler.step(optimizer)
+            scaler.update()
             n = len(samples)
             total_n += n
             for key in totals:
@@ -316,6 +393,8 @@ def train_stage3_model(train_dataset, library, cdr_table, config=None):
                         **{key: value / max(total_n, 1) for key, value in totals.items()}})
     config = dict(config)
     config["device_used"] = str(device)
+    config["amp_enabled"] = amp_enabled
+    config["amp_dtype_used"] = str(amp_dtype).replace("torch.", "")
     return Stage3Bundle(model=model, tokenizer=tokenizer, antigen_tokens=antigen_tokens,
                         library=library, cdr_table=cdr_table, config=config,
                         device=device, history=history)
@@ -331,9 +410,12 @@ def predict_stage3(bundle, dataset, batch_size=None):
             samples = [dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, bundle.tokenizer, bundle.antigen_tokens,
                                    bundle.library["target_to_index"], bundle.cdr_table,
-                                   bundle.device)
-            output = model.forward_candidates(batch)
-            target_logits.append(output["target_logits"].cpu().numpy())
+                                   device=bundle.device)
+            amp_enabled = bool(bundle.config.get("amp", False) and bundle.device.type == "cuda")
+            amp_dtype = torch.float16 if bundle.config.get("amp_dtype", "float16") == "float16" else torch.bfloat16
+            with torch.autocast(device_type=bundle.device.type, dtype=amp_dtype, enabled=amp_enabled):
+                output = model.forward_candidates(batch, vh_pooled=batch.get("latent_vh_embedding"))
+            target_logits.append(output["target_logits"].float().cpu().numpy())
             affinity_logits.append(output["affinity_logits"].cpu().numpy())
             log_kd_pred.append(output["log_kd_pred"].cpu().numpy())
             rank_score.append(output["rank_score"].cpu().numpy())
@@ -412,8 +494,8 @@ def export_stage3_interpretability(bundle, dataset, path, temperature=1.0):
             samples = [dataset[int(i)] for i in indices]
             batch = collate_stage3(samples, bundle.tokenizer, bundle.antigen_tokens,
                                    bundle.library["target_to_index"], bundle.cdr_table,
-                                   bundle.device)
-            output = model.forward_candidates(batch)
+                                   device=bundle.device)
+            output = model.forward_candidates(batch, vh_pooled=batch.get("latent_vh_embedding"))
             rank_score = output["rank_score"].cpu().numpy()
             log_kd = output["log_kd_pred"].cpu().numpy()
             affinity_logits = output["affinity_logits"].cpu().numpy()
