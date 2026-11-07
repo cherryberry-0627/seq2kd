@@ -1,0 +1,83 @@
+{
+  "experiment": "target-only KNN distillation with optional ESM2 target branch",
+  "branch": "experiment/target-only-knn-distillation",
+  "seed": 2026,
+  "train_size": 3333,
+  "val_size": 712,
+  "configuration": {
+    "max_vh_length": 512,
+    "batch_size": 64,
+    "epochs": 30,
+    "use_cdr": true,
+    "use_chunk_attention": false,
+    "use_cross_attention": false,
+    "knn_distillation": {
+      "target_weight": 0.15,
+      "affinity_weight": 0.0,
+      "regression_weight": 0.0,
+      "temperature": 1.0,
+      "train_only_leave_one_out": true
+    },
+    "esm2": {
+      "model": "esm2_t6_8M_UR50D",
+      "embedding_dim": 320,
+      "frozen_encoder": true,
+      "target_branch_only": true
+    }
+  },
+  "metrics": {
+    "m2": {
+      "target_macro_f1": 0.7476380558627987,
+      "affinity_macro_f1": 0.6110977990778611,
+      "log_kd_mae": 0.682602811276474,
+      "combined_score": 0.6687201544627079,
+      "seconds": 118.5071318615228
+    },
+    "m2_esm2_target_only": {
+      "target_macro_f1": 0.7403284701588546,
+      "affinity_macro_f1": 0.5740187703745555,
+      "log_kd_mae": 0.7228584868620642,
+      "combined_score": 0.6465048754778895,
+      "seconds": 118.4189633866772
+    },
+    "m2_knn_target_distill": {
+      "target_macro_f1": 0.744640922732624,
+      "affinity_macro_f1": 0.5777860921592421,
+      "log_kd_mae": 0.7263230854784196,
+      "combined_score": 0.6485108691167984,
+      "seconds": 118.23920933529735
+    },
+    "m2_esm2_target_only_knn_target_distill": {
+      "target_macro_f1": 0.769891568415826,
+      "affinity_macro_f1": 0.5933056782870115,
+      "log_kd_mae": 0.6886953490950651,
+      "combined_score": 0.6681027718335654,
+      "seconds": 118.69439332187176
+    }
+  },
+  "deltas_vs_m2": {
+    "m2_esm2_target_only": {
+      "target_macro_f1": -0.0073095857040431,
+      "affinity_macro_f1": -0.0370790287033053,
+      "log_kd_mae": 0.0402556755855876,
+      "combined_score": -0.0222152799848182
+    },
+    "m2_knn_target_distill": {
+      "target_macro_f1": -0.0029971331301737,
+      "affinity_macro_f1": -0.0333117069186184,
+      "log_kd_mae": 0.0437202742019455,
+      "combined_score": -0.0202092853459095
+    },
+    "m2_esm2_target_only_knn_target_distill": {
+      "target_macro_f1": 0.0222535125530273,
+      "affinity_macro_f1": -0.0177921208548496,
+      "log_kd_mae": 0.0060925378185911,
+      "combined_score": -0.0006173839291425
+    }
+  },
+  "interpretation": {
+    "main_finding": "ESM2 plus target-only KNN distillation improves target identification relative to M2, while affinity and log-Kd remain slightly below M2.",
+    "recommended_next_step": "Use task-specific ESM2 projection and confidence-weighted target distillation; do not distill KNN affinity/log-Kd until calibrated.",
+    "validation_note": "These are single-seed validation results and should not be treated as final generalization estimates."
+  }
+}
